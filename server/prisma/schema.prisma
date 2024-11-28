@@ -1,14 +1,58 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
-generator client {
-  provider = "prisma-client-js"
+datasource db {
+  provider = "mysql" // Specify the database provider
+  url      = env("DATABASE_URL") // Use the environment variable for the database connection
 }
 
-datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+generator client {
+  provider = "prisma-client-js" // Generate Prisma Client for JavaScript/Node.js
+}
+
+model User {
+  user_id        String    @id @default(uuid()) // Primary Key, UUID format
+  username       String    @unique             // Unique username
+  name           String                       // User's full name
+  email          String    @unique             // Unique email
+  password_hash  String                       // Hashed password
+  role           String                         // String for role ('user' or 'admin')
+
+  // Relations
+  watchlists     Watchlist[]                  // Relation to Watchlist
+
+  @@map("User") // Map to the table name "User"
+}
+
+model Watchlist {
+  watchlist_id String    @id @default(uuid()) // Primary Key, UUID format
+  user_id      String                          // Foreign Key for User
+  movie_id     String                          // Foreign Key for Movie
+  watched      Boolean   @default(false)      // Whether the movie is watched
+  rating       Int?                           // Optional user rating (1-10)
+  notes        String?                        // Optional notes from the user
+
+  // Relations
+  user         User      @relation(fields: [user_id], references: [user_id]) // Relation to User
+  movie        Movie     @relation(fields: [movie_id], references: [movie_id]) // Relation to Movie
+
+  @@map("Watchlist") // Map to the table name "Watchlist"
+}
+
+model Movie {
+  movie_id    String    @id @default(uuid())  // Primary Key, UUID format
+  title       String                        // Movie title
+  year        Int                           // Year of release
+  genre       String                        // Genre (e.g., Action, Comedy)
+  director    String?                       // Director(s)
+  writer      String?                       // Writer(s)
+  actors      String?                       // Actor(s)
+  plot        String?                       // Plot summary
+  language    String?                       // Language of the movie
+  country     String?                       // Country of production
+  awards      String?                       // Awards won
+  poster_url  String?                       // URL for the movie poster
+  imdb_rating Float?                        // IMDb rating (e.g., 8.5)
+
+  // Relations
+  watchlists  Watchlist[]                   // Relation to Watchlist
+
+  @@map("Movies") // Map to the table name "Movies"
 }
