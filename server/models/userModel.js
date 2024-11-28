@@ -9,11 +9,23 @@ async function getUserById(id) {
     where: { id: Number(id) },
   });
 }
+
+async function getUserByEmail(email) {
+  return await prisma.user.findUnique({
+    where: { email: email },
+  });
+}
+
+async function getUserbyUsername(username) {
+  return await prisma.user.findUnique({
+    where: { username: username },
+  });
+}
  
 async function createUser(data) {
   return await prisma.user.create({ data });
 }
-// Update a user by ID
+
 async function updateUser(userId, data) {
   return prisma.user.update({
     where: { id: userId },
@@ -21,7 +33,6 @@ async function updateUser(userId, data) {
   });
 }
 
-// Delete a user by ID
 async function deleteUser(userId) {
   return prisma.user.delete({
     where: { id: userId },
