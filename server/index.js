@@ -17,6 +17,10 @@ const app = express();
 // Middleware
 app.use(cors());
 app.use(bodyParser.json());
+app.use(express.json());
+
+//routes
+app.use('/api/auth', require('./routes/authRoutes'));
 
 // Start server
 const port = process.env.PORT || 5000;
