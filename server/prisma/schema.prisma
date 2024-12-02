@@ -12,7 +12,7 @@ model User {
   username       String    @unique             // Unique username
   name           String                       // User's full name
   email          String    @unique             // Unique email
-  password_hash  String                       // Hashed password
+  password       String                       // Hashed password
   role           String                         // String for role ('user' or 'admin')
 
   // Relations
