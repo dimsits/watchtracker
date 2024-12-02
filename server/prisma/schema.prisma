@@ -1,58 +1,47 @@
-datasource db {
-  provider = "mysql" // Specify the database provider
-  url      = env("DATABASE_URL") // Use the environment variable for the database connection
+generator client {
+  provider = "prisma-client-js"
 }
 
-generator client {
-  provider = "prisma-client-js" // Generate Prisma Client for JavaScript/Node.js
+datasource db {
+  provider = "mysql" // Or your database provider
+  url      = env("DATABASE_URL")
 }
 
 model User {
-  user_id        String    @id @default(uuid()) // Primary Key, UUID format
-  username       String    @unique             // Unique username
-  name           String                       // User's full name
-  email          String    @unique             // Unique email
-  password       String                       // Hashed password
-  role           String                         // String for role ('user' or 'admin')
+  user_id       String    @id @default(uuid())
+  username      String
+  name          String
+  email         String    @unique
+  password      String
+  role          String    
+  watchlists    Watchlist[]
+}
 
-  // Relations
-  watchlists     Watchlist[]                  // Relation to Watchlist
-
-  @@map("User") // Map to the table name "User"
+model Movies {
+  movie_id      String    @id @default(uuid())
+  title         String
+  year          String
+  genre         String
+  director      String
+  writer        String
+  actors        String
+  plot          String
+  language      String
+  country       String
+  awards        String
+  poster_url    String
+  imdb_rating   Float
+  watchlists    Watchlist[]
 }
 
 model Watchlist {
-  watchlist_id String    @id @default(uuid()) // Primary Key, UUID format
-  user_id      String                          // Foreign Key for User
-  movie_id     String                          // Foreign Key for Movie
-  watched      Boolean   @default(false)      // Whether the movie is watched
-  rating       Int?                           // Optional user rating (1-10)
-  notes        String?                        // Optional notes from the user
+  watchlist_id  String   @id @default(uuid())
+  user_id       String
+  movie_id      String
+  watched       Boolean  @default(false)
+  rating        Int?
+  notes         String?
 
-  // Relations
-  user         User      @relation(fields: [user_id], references: [user_id]) // Relation to User
-  movie        Movie     @relation(fields: [movie_id], references: [movie_id]) // Relation to Movie
-
-  @@map("Watchlist") // Map to the table name "Watchlist"
-}
-
-model Movie {
-  movie_id    String    @id @default(uuid())  // Primary Key, UUID format
-  title       String                        // Movie title
-  year        Int                           // Year of release
-  genre       String                        // Genre (e.g., Action, Comedy)
-  director    String?                       // Director(s)
-  writer      String?                       // Writer(s)
-  actors      String?                       // Actor(s)
-  plot        String?                       // Plot summary
-  language    String?                       // Language of the movie
-  country     String?                       // Country of production
-  awards      String?                       // Awards won
-  poster_url  String?                       // URL for the movie poster
-  imdb_rating Float?                        // IMDb rating (e.g., 8.5)
-
-  // Relations
-  watchlists  Watchlist[]                   // Relation to Watchlist
-
-  @@map("Movies") // Map to the table name "Movies"
+  user          User     @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
+  movie         Movies   @relation(fields: [movie_id], references: [movie_id], onDelete: Cascade)
 }
