@@ -21,6 +21,7 @@ app.use(express.json());
 
 //routes
 app.use('/api/auth', require('./routes/authRoutes'));
+app.use('/api/movies', require('./routes/movieRoutes'));
 
 // Start server
 const port = process.env.PORT || 5000;
