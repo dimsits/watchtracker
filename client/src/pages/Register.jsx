@@ -66,22 +66,30 @@ function Register() {
   return (
     <div className="min-h-screen bg-granite-softWhite flex flex-col">
   {/* Header */}
-  <header className="bg-granite-dark text-white py-6 px-8 shadow-md">
-    <div className="container mx-auto flex justify-between items-center">
-      <h1 className="text-3xl font-bold font-nunito">WatchTracker</h1>
-      <nav>
-      </nav>
-    </div>
-  </header>
+  <header className="bg-gradient-to-r from-granite-dark to-granite-medium text-white py-4 shadow-md">
+        <div className="container mx-auto flex items-left justify-left">
+          <div className="flex items-center space-x-3">
+            <div className="w-10 h-10 rounded-full bg-granite-light flex items-center justify-center">
+              <span className="text-xl font-bold text-granite-dark">🎬</span>
+            </div>
+            <h1 className="text-2xl font-bold font-nunito">WatchTracker</h1>
+          </div>
+        </div>
+      </header>
 
   {/* Main Content */}
   <div className="flex flex-1">
     {/* Image Section */}
-    <div className="hidden md:flex w-1/2 bg-granite-light items-center justify-center">
-      <div className="w-3/4 h-3/4 bg-granite-medium flex items-center justify-center rounded-lg">
-        <p className="text-granite-dark text-lg">Image Placeholder</p>
-      </div>
-    </div>
+<div className="hidden md:flex w-1/2 items-center justify-center">
+  <div className="w-3/4 h-3/4 flex items-center justify-center rounded-lg overflow-hidden">
+    <img
+      src="https://images.pexels.com/photos/55787/pexels-photo-55787.jpeg?cs=srgb&dl=pexels-donaldtong94-55787.jpg&fm=jpg"
+      alt="Placeholder"
+      className="w-full h-full object-cover"
+    />
+  </div>
+</div>
+
 
     {/* Registration Form */}
     <div className="flex w-full md:w-1/2 justify-center items-center px-8 py-12">

@@ -1,224 +1,43 @@
-
-import { useState } from 'react';
+import React, { useState } from 'react';
 import MovieCard from '../components/MovieCard';
+import Header from '../components/Header'; // Centralized Header
 import { useTheme } from '../contexts/ThemeContext';
 
 function Dashboard() {
+  const { isDarkMode } = useTheme();
   const [activeTab, setActiveTab] = useState('watchlist');
   const [searchQuery, setSearchQuery] = useState('');
-   const [movies, setMovies] = useState([
+  const [movies, setMovies] = useState([
     {
       id: 1,
       title: 'Interstellar',
-      image: '/placeholder.svg?height=300&width=200',
+      image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRS3SYg9fFcXLvbebCqOsbMnF2SwNKUACmrAA&s',
       description: 'A lone astronaut ventures into deep space...',
       watched: false,
     },
     {
       id: 2,
       title: 'The Martian',
-      image: '/placeholder.svg?height=300&width=200',
+      image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRS3SYg9fFcXLvbebCqOsbMnF2SwNKUACmrAA&s',
       description: 'An astronaut stranded on Mars struggles to survive.',
       watched: false,
     },
     {
       id: 3,
       title: 'Gravity',
-      image: '/placeholder.svg?height=300&width=200',
+      image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRS3SYg9fFcXLvbebCqOsbMnF2SwNKUACmrAA&s',
       description: 'Two astronauts work together to survive in space.',
       watched: true,
     },
     {
       id: 4,
       title: 'Inception',
-      image: '/placeholder.svg?height=300&width=200',
+      image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRS3SYg9fFcXLvbebCqOsbMnF2SwNKUACmrAA&s',
       description: 'A thief enters dreams to steal corporate secrets.',
       watched: false,
     },
-    {
-      id: 5,
-      title: 'Tenet',
-      image: '/placeholder.svg?height=300&width=200',
-      description: 'A secret agent must manipulate time to prevent catastrophe.',
-      watched: true,
-    },
-    {
-      id: 6,
-      title: 'Ad Astra',
-      image: '/placeholder.svg?height=300&width=200',
-      description: 'A man travels to space to find his missing father.',
-      watched: false,
-    },
-    {
-      id: 7,
-      title: 'The Imitation Game',
-      image: '/placeholder.svg?height=300&width=200',
-      description: 'The story of Alan Turing and the Enigma code.',
-      watched: true,
-    },
-    {
-      id: 8,
-      title: 'Arrival',
-      image: '/placeholder.svg?height=300&width=200',
-      description: 'A linguist communicates with extraterrestrial visitors.',
-      watched: false,
-    },
-    {
-      id: 9,
-      title: 'Blade Runner 2049',
-      image: '/placeholder.svg?height=300&width=200',
-      description: 'A blade runner unearths a long-buried secret.',
-      watched: true,
-    },
-    {
-      id: 10,
-      title: 'Apollo 13',
-      image: '/placeholder.svg?height=300&width=200',
-      description: 'NASA faces a crisis during a lunar mission.',
-      watched: true,
-    },
-    {
-      id: 11,
-      title: 'Dune',
-      image: '/placeholder.svg?height=300&width=200',
-      description: 'A noble family becomes embroiled in galactic conflict.',
-      watched: false,
-    },
-    {
-      id: 12,
-      title: 'The Midnight Sky',
-      image: '/placeholder.svg?height=300&width=200',
-      description: 'A lone scientist tries to warn astronauts about Earth.',
-      watched: false,
-    },
-    {
-      id: 13,
-      title: 'The Revenant',
-      image: '/placeholder.svg?height=300&width=200',
-      description: 'A frontiersman fights for survival after being left for dead.',
-      watched: false,
-    },
-    {
-      id: 14,
-      title: 'Ex Machina',
-      image: '/placeholder.svg?height=300&width=200',
-      description: 'A programmer is selected to test a groundbreaking AI.',
-      watched: true,
-    },
-    {
-      id: 15,
-      title: 'Oblivion',
-      image: '/placeholder.svg?height=300&width=200',
-      description: 'A drone technician uncovers the truth about humanity.',
-      watched: false,
-    },
-    {
-      id: 16,
-      title: 'Her',
-      image: '/placeholder.svg?height=300&width=200',
-      description: 'A man develops a relationship with an intelligent AI.',
-      watched: true,
-    },
-    {
-      id: 17,
-      title: 'Mad Max: Fury Road',
-      image: '/placeholder.svg?height=300&width=200',
-      description: 'In a post-apocalyptic wasteland, survival is key.',
-      watched: false,
-    },
-    {
-      id: 18,
-      title: 'The Matrix',
-      image: '/placeholder.svg?height=300&width=200',
-      description: 'A computer hacker learns the truth about his reality.',
-      watched: true,
-    },
-    {
-      id: 19,
-      title: 'Warcraft',
-      image: '/placeholder.svg?height=300&width=200',
-      description: 'Humans and orcs clash in an epic fantasy adventure.',
-      watched: false,
-    },
-    {
-      id: 20,
-      title: 'Star Wars: A New Hope',
-      image: '/placeholder.svg?height=300&width=200',
-      description: 'A young hero joins the rebellion against an evil empire.',
-      watched: true,
-    },
-    {
-      id: 21,
-      title: 'Rogue One',
-      image: '/placeholder.svg?height=300&width=200',
-      description: 'Rebels attempt to steal the Death Star plans.',
-      watched: true,
-    },
-    {
-      id: 22,
-      title: 'The Avengers',
-      image: '/placeholder.svg?height=300&width=200',
-      description: 'Earth’s mightiest heroes band together to save the world.',
-      watched: false,
-    },
-    {
-      id: 23,
-      title: 'Guardians of the Galaxy',
-      image: '/placeholder.svg?height=300&width=200',
-      description: 'A group of misfits unites to save the universe.',
-      watched: false,
-    },
-    {
-      id: 24,
-      title: 'Doctor Strange',
-      image: '/placeholder.svg?height=300&width=200',
-      description: 'A surgeon discovers the mystical arts.',
-      watched: true,
-    },
-    {
-      id: 25,
-      title: 'Iron Man',
-      image: '/placeholder.svg?height=300&width=200',
-      description: 'A billionaire builds a suit to fight injustice.',
-      watched: true,
-    },
-    {
-      id: 26,
-      title: 'Black Panther',
-      image: '/placeholder.svg?height=300&width=200',
-      description: 'A king must defend his nation and claim his throne.',
-      watched: false,
-    },
-    {
-      id: 27,
-      title: 'Thor: Ragnarok',
-      image: '/placeholder.svg?height=300&width=200',
-      description: 'The god of thunder faces an apocalyptic threat.',
-      watched: false,
-    },
-    {
-      id: 28,
-      title: 'The Dark Knight',
-      image: '/placeholder.svg?height=300&width=200',
-      description: 'Batman battles the Joker to save Gotham City.',
-      watched: true,
-    },
-    {
-      id: 29,
-      title: 'Joker',
-      image: '/placeholder.svg?height=300&width=200',
-      description: 'A man’s descent into madness sparks a cultural revolution.',
-      watched: false,
-    },
-    {
-      id: 30,
-      title: 'Parasite',
-      image: '/placeholder.svg?height=300&width=200',
-      description: 'A poor family infiltrates a wealthy household.',
-      watched: true,
-    },
+    // Add the rest of your movie objects
   ]);
-  const { isDarkMode } = useTheme();
 
   const handleMarkWatched = (id) => {
     setMovies((prevMovies) =>
@@ -241,19 +60,16 @@ function Dashboard() {
     );
 
   return (
-    <div className={`min-h-screen ${isDarkMode ? 'bg-gray-900 text-white' : 'bg-granite-softWhite'}`}>
-      <header className={`${isDarkMode ? 'bg-gray-800' : 'bg-granite-dark'} text-white py-4 px-8 shadow-md`}>
-        <div className="container mx-auto flex justify-between items-center">
-          <h1 className="text-2xl font-bold font-nunito">WatchTracker</h1>
-          <nav className="absolute left-1/2 transform -translate-x-1/2 flex space-x-12">
-            <a href="/dashboard" className="text-white text-lg font-semi hover:text-granite-light transition duration-300 font-nunito">My List</a>
-            <a href="/movies" className="text-white text-lg font-semi hover:text-granite-light transition duration-300 font-nunito">Movies</a>
-            <a href="/account" className="text-white text-lg font-semi hover:text-granite-light transition duration-300 font-nunito">Account</a>
-            <a href="/login" className="text-white text-lg font-semi hover:text-granite-light transition duration-300 font-nunito">Logout</a>
-          </nav>
-        </div>
-      </header>
+    <div
+      className={`min-h-screen ${
+        isDarkMode ? 'bg-gray-900 text-white' : 'bg-granite-softWhite'
+      }`}
+    >
+      <Header />
+
+      {/* Add Padding to Prevent Header Overlap */}
       <main className="container mx-auto px-8 py-6">
+        {/* Search Bar */}
         <div className="mb-8">
           <div className="relative max-w-md mx-auto">
             <input
@@ -261,29 +77,55 @@ function Dashboard() {
               placeholder="Search movies..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className={`w-full px-4 py-2 rounded-md border ${isDarkMode ? 'bg-gray-700 text-white border-gray-600' : 'bg-white border-granite-medium'} focus:outline-none focus:border-granite-dark`}
+              className={`w-full px-4 py-2 rounded-md border ${
+                isDarkMode
+                  ? 'bg-gray-700 text-white border-gray-600'
+                  : 'bg-white border-granite-medium'
+              } focus:outline-none focus:border-granite-dark`}
             />
-            <span className="absolute right-3 top-2.5 text-granite-medium">&#128269;</span>
+            <span className="absolute right-3 top-2.5 text-granite-medium">
+              &#128269;
+            </span>
           </div>
         </div>
+
+        {/* Tabs */}
+        <div className="flex space-x-2 mb-6">
+  <button
+    onClick={() => setActiveTab('watchlist')}
+    className={`px-6 py-3 rounded-full font-nunito text-lg flex items-center justify-center transition duration-500 ${
+      activeTab === 'watchlist'
+        ? isDarkMode
+          ? 'bg-[#5FA5B3] text-white hover:bg-[#6FB6C5]' // Lighter blue for dark mode
+          : 'bg-[#8BC8D4] text-white hover:bg-[#A1D8E0]' // Even lighter blue for light mode
+        : isDarkMode
+        ? 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+        : 'bg-granite-light text-granite-dark hover:bg-granite-medium'
+    }`}
+  >
+    <span className="mr-2">📋</span>
+    Watchlist
+  </button>
+  <button
+    onClick={() => setActiveTab('seen')}
+    className={`px-6 py-3 rounded-full font-nunito text-lg flex items-center justify-center transition duration-500 ${
+      activeTab === 'seen'
+        ? isDarkMode
+          ? 'bg-[#6FB5A4] text-white hover:bg-[#80C5B3]' // Lighter green for dark mode
+          : 'bg-[#A1D9C8] text-white hover:bg-[#B2E4D6]' // Even lighter green for light mode
+        : isDarkMode
+        ? 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+        : 'bg-granite-light text-granite-dark hover:bg-granite-medium'
+    }`}
+  >
+    <span className="mr-2">👁️</span>
+    Seen
+  </button>
+</div>
+
+
+        {/* Movie Grid */}
         <section>
-          <h2 className={`text-2xl font-nunito mb-4 ${isDarkMode ? 'text-white' : 'text-black'}`}>
-            {activeTab === 'watchlist' ? 'Your Watchlist' : 'Movies You’ve Seen'}
-          </h2>
-          <div className="flex space-x-2 mb-6">
-            <button
-              onClick={() => setActiveTab('watchlist')}
-              className={`px-4 py-2 rounded-md font-nunito transition duration-300 ${activeTab === 'watchlist' ? isDarkMode ? 'bg-blue-600 text-white' : 'bg-granite-dark text-white' : isDarkMode ? 'bg-gray-700 text-white' : 'bg-granite-light text-granite-dark'} hover:${isDarkMode ? 'bg-blue-700' : 'bg-granite-medium'}`}
-            >
-              Watchlist
-            </button>
-            <button
-              onClick={() => setActiveTab('seen')}
-              className={`px-4 py-2 rounded-md font-nunito transition duration-300 ${activeTab === 'seen' ? isDarkMode ? 'bg-blue-600 text-white' : 'bg-granite-dark text-white' : isDarkMode ? 'bg-gray-700 text-white' : 'bg-granite-light text-granite-dark'} hover:${isDarkMode ? 'bg-blue-700' : 'bg-granite-medium'}`}
-            >
-              Seen
-            </button>
-          </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {filteredMovies.length > 0 ? (
               filteredMovies.map((movie) => (
@@ -296,7 +138,11 @@ function Dashboard() {
                 />
               ))
             ) : (
-              <p className={`text-center ${isDarkMode ? 'text-gray-400' : 'text-granite-medium'}`}>
+              <p
+                className={`text-center ${
+                  isDarkMode ? 'text-gray-400' : 'text-granite-medium'
+                }`}
+              >
                 No movies match your search.
               </p>
             )}
@@ -308,4 +154,3 @@ function Dashboard() {
 }
 
 export default Dashboard;
-

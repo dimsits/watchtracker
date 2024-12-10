@@ -20,7 +20,7 @@ function App() {
               <Route path="/account" element={<Account />} />
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} /> {/* Add Register route */}
-              <Route path="/" element={<Dashboard />} />
+              <Route path="/" element={<Login />} />
             </Routes>
           </div>
         </Router>

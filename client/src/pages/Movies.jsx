@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import MovieAddCard from '../components/MovieAddCard';
+import Header from '../components/Header';
 import { useTheme } from '../contexts/ThemeContext';
 
 function Movies() {
@@ -7,125 +8,36 @@ function Movies() {
   const [movies, setMovies] = useState([
     // Example movie data
     {
-       id: 1,
-    title: "The Grand Adventure",
-    image: "/placeholder.svg?height=300&width=200",
-    description: "An explorer embarks on a quest to find hidden treasures.",
-  },
-  {
-    id: 2,
-    title: "Into the Unknown",
-    image: "/placeholder.svg?height=300&width=200",
-    description: "A thrilling sci-fi story about intergalactic survival.",
-  },
-  {
-    id: 3,
-    title: "Culinary Secrets",
-    image: "/placeholder.svg?height=300&width=200",
-    description: "A passionate chef rediscovers life through food.",
-  },
-  {
-    id: 4,
-    title: "The Midnight Detective",
-    image: "/placeholder.svg?height=300&width=200",
-    description: "A private investigator uncovers a conspiracy in the city.",
-  },
-  {
-    id: 5,
-    title: "Starlight Sonata",
-    image: "/placeholder.svg?height=300&width=200",
-    description: "A musician finds inspiration in the vastness of space.",
-  },
-  {
-    id: 6,
-    title: "The Last Kingdom",
-    image: "/placeholder.svg?height=300&width=200",
-    description: "A medieval knight defends his land from invading forces.",
-  },
-  {
-    id: 7,
-    title: "Tech Titans",
-    image: "/placeholder.svg?height=300&width=200",
-    description: "A hacker discovers a dangerous secret in a tech empire.",
-  },
-  {
-    id: 8,
-    title: "The Ocean's Heart",
-    image: "/placeholder.svg?height=300&width=200",
-    description: "A deep-sea diver uncovers the mysteries of the ocean.",
-  },
-  {
-    id: 9,
-    title: "Chasing Eternity",
-    image: "/placeholder.svg?height=300&width=200",
-    description: "A historian unravels a myth about eternal life.",
-  },
-  {
-    id: 10,
-    title: "Beyond the Horizon",
-    image: "/placeholder.svg?height=300&width=200",
-    description: "An astronaut journeys to the edge of the solar system.",
-  },
-  {
-    id: 11,
-    title: "Pixelated Dreams",
-    image: "/placeholder.svg?height=300&width=200",
-    description: "A gamer discovers a new reality inside a virtual world.",
-  },
-  {
-    id: 12,
-    title: "The Forgotten Forest",
-    image: "/placeholder.svg?height=300&width=200",
-    description: "A ranger uncovers secrets hidden deep in the woods.",
-  },
-  {
-    id: 13,
-    title: "City of Shadows",
-    image: "/placeholder.svg?height=300&width=200",
-    description: "A vigilante fights crime in a corrupt metropolis.",
-  },
-  {
-    id: 14,
-    title: "Timeless Wanderer",
-    image: "/placeholder.svg?height=300&width=200",
-    description: "A time traveler learns to balance past and future.",
-  },
-  {
-    id: 15,
-    title: "Falling Skies",
-    image: "/placeholder.svg?height=300&width=200",
-    description: "A family survives in a world under alien attack.",
-  },
-  {
-    id: 16,
-    title: "Aurora Chronicles",
-    image: "/placeholder.svg?height=300&width=200",
-    description: "A young scientist unlocks the power of the northern lights.",
-  },
-  {
-    id: 17,
-    title: "Desert Mirage",
-    image: "/placeholder.svg?height=300&width=200",
-    description: "A traveler discovers an ancient civilization in the desert.",
-  },
-  {
-    id: 18,
-    title: "Code of Honor",
-    image: "/placeholder.svg?height=300&width=200",
-    description: "A samurai must choose between loyalty and justice.",
-  },
-  {
-    id: 19,
-    title: "The Art of Deception",
-    image: "/placeholder.svg?height=300&width=200",
-    description: "A con artist plans the biggest heist of their career.",
-  },
-  {
-    id: 20,
-    title: "Eternal Bloom",
-    image: "/placeholder.svg?height=300&width=200",
-    description: "A botanist uncovers a flower with magical properties.",
-  },
+      id: 1,
+      title: "The Grand Adventure",
+      image: "https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcQg_Lj-AwA3TKS-FSwZ8c8V0zDIA4cnGrMGz0tGfAzakmcYhWr6ndm6EXpSrYYXCprXW9d6",
+      description: "An explorer embarks on a quest to find hidden treasures.",
+    },
+    {
+      id: 2,
+      title: "Into the Unknown",
+      image: "https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcQg_Lj-AwA3TKS-FSwZ8c8V0zDIA4cnGrMGz0tGfAzakmcYhWr6ndm6EXpSrYYXCprXW9d6",
+      description: "A thrilling sci-fi story about intergalactic survival.",
+    },
+    {
+      id: 3,
+      title: "Culinary Secrets",
+      image: "https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcQg_Lj-AwA3TKS-FSwZ8c8V0zDIA4cnGrMGz0tGfAzakmcYhWr6ndm6EXpSrYYXCprXW9d6",
+      description: "A passionate chef rediscovers life through food.",
+    },
+    {
+      id: 4,
+      title: "The Midnight Detective",
+      image: "https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcQg_Lj-AwA3TKS-FSwZ8c8V0zDIA4cnGrMGz0tGfAzakmcYhWr6ndm6EXpSrYYXCprXW9d6",
+      description: "A private investigator uncovers a conspiracy in the city.",
+    },
+    {
+      id: 5,
+      title: "Starlight Sonata",
+      image: "https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcQg_Lj-AwA3TKS-FSwZ8c8V0zDIA4cnGrMGz0tGfAzakmcYhWr6ndm6EXpSrYYXCprXW9d6",
+      description: "A musician finds inspiration in the vastness of space.",
+    },
+    // More movies...
   ]);
 
   const [watchlist, setWatchlist] = useState([]);
@@ -151,17 +63,8 @@ function Movies() {
         isDarkMode ? 'bg-gray-900 text-white' : 'bg-granite-softWhite'
       }`}
     >
-      <header className={`${isDarkMode ? 'bg-gray-800' : 'bg-granite-dark'} text-white py-4 px-8 shadow-md`}>
-        <div className="container mx-auto flex justify-between items-center">
-          <h1 className="text-2xl font-bold font-nunito">WatchTracker</h1>
-          <nav className="absolute left-1/2 transform -translate-x-1/2 flex space-x-12">
-            <a href="/dashboard" className="text-white text-lg font-semi hover:text-granite-light transition duration-300 font-nunito">My List</a>
-            <a href="/movies" className="text-white text-lg font-semi hover:text-granite-light transition duration-300 font-nunito">Movies</a>
-            <a href="/account" className="text-white text-lg font-semi hover:text-granite-light transition duration-300 font-nunito">Account</a>
-            <a href="/login" className="text-white text-lg font-semi hover:text-granite-light transition duration-300 font-nunito">Logout</a>
-          </nav>
-        </div>
-      </header>
+      {/* Header Component */}
+      <Header />
 
       <main className="container mx-auto px-8 py-6">
         {/* Search Bar */}
