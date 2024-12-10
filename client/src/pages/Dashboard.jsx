@@ -1,10 +1,12 @@
+
 import { useState } from 'react';
 import MovieCard from '../components/MovieCard';
+import { useTheme } from '../contexts/ThemeContext';
 
 function Dashboard() {
   const [activeTab, setActiveTab] = useState('watchlist');
   const [searchQuery, setSearchQuery] = useState('');
-  const [movies, setMovies] = useState([
+   const [movies, setMovies] = useState([
     {
       id: 1,
       title: 'Interstellar',
@@ -216,10 +218,8 @@ function Dashboard() {
       watched: true,
     },
   ]);
-  
-  
+  const { isDarkMode } = useTheme();
 
-  // Mark movie as watched
   const handleMarkWatched = (id) => {
     setMovies((prevMovies) =>
       prevMovies.map((movie) =>
@@ -228,104 +228,62 @@ function Dashboard() {
     );
   };
 
-  // Delete movie
   const handleDelete = (id) => {
     setMovies((prevMovies) => prevMovies.filter((movie) => movie.id !== id));
   };
 
-  // Filter movies for active tab
   const filteredMovies = movies
     .filter((movie) =>
       activeTab === 'watchlist' ? !movie.watched : movie.watched
     )
     .filter((movie) =>
       movie.title.toLowerCase().includes(searchQuery.toLowerCase())
-    ); // Filter based on search query
+    );
 
   return (
-    <div className="min-h-screen bg-granite-softWhite">
-      {/* Navigation Bar */}
-      <header className="bg-granite-dark text-white py-4 px-8 shadow-md">
-  <div className="container mx-auto flex justify-between items-center">
-    <h1 className="text-2xl font-bold font-nunito">WatchTracker</h1>
-    
-    {/* Centered Navigation */}
-    <nav className="absolute left-1/2 transform -translate-x-1/2 flex space-x-12">
-      <a 
-        href="/dashboard" 
-        className="text-white text-lg font-semi hover:text-granite-light transition duration-300 font-nunito"
-      >
-        My List
-      </a>
-      <a 
-        href="/movies" 
-        className="text-white text-lg font-semi hover:text-granite-light transition duration-300 font-nunito"
-      >
-        Movies
-      </a>
-      <a 
-        href="/account" 
-        className="text-white text-lg font-semi hover:text-granite-light transition duration-300 font-nunito"
-      >
-        Account
-      </a>
-      <a 
-        href="/login" 
-        className="text-white text-lg font-semi hover:text-granite-light transition duration-300 font-nunito"
-      >
-        Logout
-      </a>
-    </nav>
-  </div>
-</header>
-
-      {/* Main Content */}
+    <div className={`min-h-screen ${isDarkMode ? 'bg-gray-900 text-white' : 'bg-granite-softWhite'}`}>
+      <header className={`${isDarkMode ? 'bg-gray-800' : 'bg-granite-dark'} text-white py-4 px-8 shadow-md`}>
+        <div className="container mx-auto flex justify-between items-center">
+          <h1 className="text-2xl font-bold font-nunito">WatchTracker</h1>
+          <nav className="absolute left-1/2 transform -translate-x-1/2 flex space-x-12">
+            <a href="/dashboard" className="text-white text-lg font-semi hover:text-granite-light transition duration-300 font-nunito">My List</a>
+            <a href="/movies" className="text-white text-lg font-semi hover:text-granite-light transition duration-300 font-nunito">Movies</a>
+            <a href="/account" className="text-white text-lg font-semi hover:text-granite-light transition duration-300 font-nunito">Account</a>
+            <a href="/login" className="text-white text-lg font-semi hover:text-granite-light transition duration-300 font-nunito">Logout</a>
+          </nav>
+        </div>
+      </header>
       <main className="container mx-auto px-8 py-6">
-        {/* Search Bar */}
         <div className="mb-8">
           <div className="relative max-w-md mx-auto">
             <input
               type="text"
               placeholder="Search movies..."
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)} // Update search query on input
-              className="w-full px-4 py-2 rounded-md border border-granite-medium focus:outline-none focus:border-granite-dark bg-white"
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className={`w-full px-4 py-2 rounded-md border ${isDarkMode ? 'bg-gray-700 text-white border-gray-600' : 'bg-white border-granite-medium'} focus:outline-none focus:border-granite-dark`}
             />
             <span className="absolute right-3 top-2.5 text-granite-medium">&#128269;</span>
           </div>
         </div>
-
-        {/* Movie List Section */}
         <section>
-          <h2 className="text-2xl font-nunito mb-4 text-Black">
+          <h2 className={`text-2xl font-nunito mb-4 ${isDarkMode ? 'text-white' : 'text-black'}`}>
             {activeTab === 'watchlist' ? 'Your Watchlist' : 'Movies You’ve Seen'}
           </h2>
-
-          {/* Tabs */}
           <div className="flex space-x-2 mb-6">
             <button
               onClick={() => setActiveTab('watchlist')}
-              className={`px-4 py-2 rounded-md font-nunito transition duration-300 ${
-                activeTab === 'watchlist'
-                  ? 'bg-granite-dark text-white'
-                  : 'bg-granite-light text-granite-dark hover:bg-granite-medium'
-              }`}
+              className={`px-4 py-2 rounded-md font-nunito transition duration-300 ${activeTab === 'watchlist' ? isDarkMode ? 'bg-blue-600 text-white' : 'bg-granite-dark text-white' : isDarkMode ? 'bg-gray-700 text-white' : 'bg-granite-light text-granite-dark'} hover:${isDarkMode ? 'bg-blue-700' : 'bg-granite-medium'}`}
             >
               Watchlist
             </button>
             <button
               onClick={() => setActiveTab('seen')}
-              className={`px-4 py-2 rounded-md font-nunito transition duration-300 ${
-                activeTab === 'seen'
-                  ? 'bg-granite-dark text-white'
-                  : 'bg-granite-light text-granite-dark hover:bg-granite-medium'
-              }`}
+              className={`px-4 py-2 rounded-md font-nunito transition duration-300 ${activeTab === 'seen' ? isDarkMode ? 'bg-blue-600 text-white' : 'bg-granite-dark text-white' : isDarkMode ? 'bg-gray-700 text-white' : 'bg-granite-light text-granite-dark'} hover:${isDarkMode ? 'bg-blue-700' : 'bg-granite-medium'}`}
             >
               Seen
             </button>
           </div>
-
-          {/* Movie Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {filteredMovies.length > 0 ? (
               filteredMovies.map((movie) => (
@@ -334,10 +292,11 @@ function Dashboard() {
                   movie={movie}
                   onMarkWatched={handleMarkWatched}
                   onDelete={handleDelete}
+                  isDarkMode={isDarkMode}
                 />
               ))
             ) : (
-              <p className="text-center text-granite-medium">
+              <p className={`text-center ${isDarkMode ? 'text-gray-400' : 'text-granite-medium'}`}>
                 No movies match your search.
               </p>
             )}
@@ -349,3 +308,4 @@ function Dashboard() {
 }
 
 export default Dashboard;
+

@@ -94,6 +94,8 @@ function Register() {
         </h2>
         <p className="text-sm text-black text-left font-nunito">
           Enter your information below to create your account
+          <br></br>
+          Use /dashboard in URL to access website *Dev*
         </p>
         {error && (
           <div className="bg-red-100 text-red-600 border border-red-500 p-3 rounded">

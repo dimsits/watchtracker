@@ -78,7 +78,8 @@ function Login() {
           >
             <h2 className="text-3xl text-left font-nunito text-black">Log In</h2>
             <p className="text-sm text-black text-left font-nunito">
-              Enter your credentials to access your account
+              Enter your credentials to access your account <br></br>
+              Use /dashboard in URL to access website *Dev Tips*
             </p>
             {error && (
               <div className="bg-red-100 text-red-600 border border-red-500 p-3 rounded">
