@@ -4,9 +4,9 @@ async function getAllUsers() {
   return await prisma.user.findMany();
 }
 
-async function getUserById(id) {
+async function getUserById(userId) {
   return await prisma.user.findUnique({
-    where: { id: Number(id) },
+    where: { user_id: userId },
   });
 }
 
@@ -28,14 +28,14 @@ async function createUser(data) {
 
 async function updateUser(userId, data) {
   return prisma.user.update({
-    where: { id: userId },
+    where: { user_id: userId },
     data,
   });
 }
 
 async function deleteUser(userId) {
   return prisma.user.delete({
-    where: { id: userId },
+    where: { user_id: userId },
   });
 }
 

@@ -10,7 +10,11 @@ router.post('/login', loginUser);
 
 // Protected Routes
 router.get('/profile', authMiddleware, (req, res) => {
-    res.json({ message: 'Protected Route' });
+    res.json({ 
+        message: 'Protected Route', 
+        user: req.user 
+    });
 });
+
 
 module.exports = router;

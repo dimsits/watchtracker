@@ -44,7 +44,16 @@ async function loginUser(req, res) {
         const isPasswordValid = await bcrypt.compare(password, user.password);
         if (!isPasswordValid) {
             return res.status(400).json({ error: 'Invalid credentials' });
-        } 
+        }
+        
+        const token = jwt.sign({ user_id: user.user_id, email: user.email,role: user.role }, JWT_SECRET, { expiresIn: '3h' });
+        res.status(200).json({ message: 'User logged in', token , user: {
+            user_id: user.user_id,
+            username: user.username,
+            name: user.name,
+            email: user.email,
+            role: user.role
+        } }); 
     } catch (error) {
             res.status(500).json({ error: 'Failed to login' });
     }
