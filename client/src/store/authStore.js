@@ -9,12 +9,23 @@ const useAuthStore = create((set) => ({
   error: null, // For error handling
 
   // Action to log in the user
+  // Action to log in the user
   login: async (credentials) => {
     set({ loading: true, error: null });
     try {
-      const response = await axios.post('http://localhost:5000/api/auth/login', credentials);
+      const payload = {
+        email: credentials.email,
+        password: credentials.password,
+      };
+  
+      const response = await axios.post('http://localhost:5000/api/auth/login', payload, {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+  
       set({
-        user: response.data, // Set user data from API response
+        user: response.data,
         isAuthenticated: true,
         loading: false,
       });
@@ -24,8 +35,13 @@ const useAuthStore = create((set) => ({
         error: error.response?.data?.message || 'Login failed',
         loading: false,
       });
+  
+      // Explicitly throw the error so the calling code can handle it
+      throw new Error(error.response?.data?.message || 'Login failed');
     }
   },
+  
+
 
   // Action to register a user
   register: async (userDetails) => {

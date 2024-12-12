@@ -15,8 +15,8 @@ function App() {
         <Router>
           <div className="min-h-screen">
             <Routes>
-              <Route path="/" element={<Register />} /> {/* Add Register route */}
-              <Route path="/login" element={<Login />} />
+              <Route path="/" element={<Login />} />
+              <Route path="/register" element={<Register />} /> 
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/movies" element={<Movies />} />
               <Route path="/account" element={<Account />} />
