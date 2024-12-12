@@ -15,12 +15,11 @@ function App() {
         <Router>
           <div className="min-h-screen">
             <Routes>
+              <Route path="/" element={<Register />} /> {/* Add Register route */}
+              <Route path="/login" element={<Login />} />
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/movies" element={<Movies />} />
               <Route path="/account" element={<Account />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/register" element={<Register />} /> {/* Add Register route */}
-              <Route path="/" element={<Login />} />
             </Routes>
           </div>
         </Router>
