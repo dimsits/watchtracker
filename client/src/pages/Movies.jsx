@@ -66,7 +66,7 @@ function Movies() {
       {/* Header Component */}
       <Header />
 
-      <main className="container mx-auto px-8 py-6">
+      <main className="pt-20 px-4 md:px-8">
         {/* Search Bar */}
         <div className="mb-8">
           <div className="relative max-w-md mx-auto">
@@ -89,25 +89,26 @@ function Movies() {
 
         {/* Movies Grid */}
         <section>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {filteredMovies.length > 0 ? (
-              filteredMovies.map((movie) => (
-                <MovieAddCard
-                  key={movie.id}
-                  movie={movie}
-                  onAddToWatchlist={handleAddToWatchlist}
-                />
-              ))
-            ) : (
-              <p
-                className={`text-center ${
-                  isDarkMode ? 'text-gray-400' : 'text-granite-medium'
-                }`}
-              >
-                No movies match your search.
-              </p>
-            )}
-          </div>
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-7 gap-4">
+  {filteredMovies.length > 0 ? (
+    filteredMovies.map((movie) => (
+      <MovieAddCard
+        key={movie.id}
+        movie={movie}
+        onAddToWatchlist={handleAddToWatchlist}
+      />
+    ))
+  ) : (
+    <p
+      className={`text-center ${
+        isDarkMode ? "text-gray-400" : "text-granite-medium"
+      }`}
+    >
+      No movies match your search.
+    </p>
+  )}
+</div>
+
         </section>
       </main>
     </div>

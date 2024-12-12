@@ -1,74 +1,164 @@
-import React, { useState } from 'react';
-import MovieCard from '../components/MovieCard';
-import Header from '../components/Header'; // Centralized Header
-import { useTheme } from '../contexts/ThemeContext';
+import React, { useState, useRef, useEffect } from "react";
+import MovieCard from "../components/MovieCard";
+import ExpandedMovieCard from "../components/ExpandedMovieCard";
+import Header from "../components/Header";
+import { useTheme } from "../contexts/ThemeContext";
+
+function MovieRow({
+  title,
+  movies,
+  onMarkSeen,
+  onDelete,
+  onExpand,
+  expandedMovieId,
+}) {
+  const scrollContainerRef = useRef(null);
+  const { isDarkMode } = useTheme();
+
+  const scroll = (direction) => {
+    const container = scrollContainerRef.current;
+    if (container) {
+      const scrollAmount = direction === "left" ? -400 : 400;
+      container.scrollBy({ left: scrollAmount, behavior: "smooth" });
+    }
+  };
+
+  return (
+    <div className="mb-8">
+      <h2
+        className={`text-2xl font-bold mb-4 px-8 ${
+          isDarkMode ? "text-white" : "text-gray-800"
+        }`}
+      >
+        {title}
+      </h2>
+      <div className="relative group">
+        <div
+          ref={scrollContainerRef}
+          className="flex overflow-x-auto gap-4 px-8 pb-4 scrollbar-hide"
+        >
+          {movies.map((movie) => (
+            <MovieCard
+              key={movie.id}
+              movie={movie}
+              onMarkSeen={onMarkSeen}
+              onDelete={onDelete}
+              onExpand={onExpand}
+              isExpanded={movie.id === expandedMovieId}
+            />
+          ))}
+        </div>
+
+        <button
+          onClick={() => scroll("left")}
+          className="absolute left-0 top-1/2 -translate-y-1/2 bg-black/50 text-white p-4 rounded-r opacity-0 group-hover:opacity-100 transition-opacity"
+        >
+          ←
+        </button>
+        <button
+          onClick={() => scroll("right")}
+          className="absolute right-0 top-1/2 -translate-y-1/2 bg-black/50 text-white p-4 rounded-l opacity-0 group-hover:opacity-100 transition-opacity"
+        >
+          →
+        </button>
+      </div>
+    </div>
+  );
+}
 
 function Dashboard() {
   const { isDarkMode } = useTheme();
-  const [activeTab, setActiveTab] = useState('watchlist');
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState("");
+  const [isSearching, setIsSearching] = useState(false);
+  const [expandedMovieId, setExpandedMovieId] = useState(null);
+
   const [movies, setMovies] = useState([
     {
       id: 1,
-      title: 'Interstellar',
-      image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRS3SYg9fFcXLvbebCqOsbMnF2SwNKUACmrAA&s',
-      description: 'A lone astronaut ventures into deep space...',
-      watched: false,
+      title: "Interstellar",
+      image: "https://via.placeholder.com/200x300",
+      description:
+        "A team of explorers travel through a wormhole in space in an attempt to ensure humanity's survival.",
+      seen: false,
+      genre: "Action",
     },
     {
       id: 2,
-      title: 'The Martian',
-      image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRS3SYg9fFcXLvbebCqOsbMnF2SwNKUACmrAA&s',
-      description: 'An astronaut stranded on Mars struggles to survive.',
-      watched: false,
+      title: "The Martian",
+      image: "https://via.placeholder.com/200x300",
+      description:
+        "An astronaut becomes stranded on Mars after his team assume him dead, and must rely on his ingenuity to survive.",
+      seen: false,
+      genre: "Anime",
     },
     {
       id: 3,
-      title: 'Gravity',
-      image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRS3SYg9fFcXLvbebCqOsbMnF2SwNKUACmrAA&s',
-      description: 'Two astronauts work together to survive in space.',
-      watched: true,
+      title: "Gravity",
+      image: "https://via.placeholder.com/200x300",
+      description:
+        "Two astronauts work together to survive after an accident leaves them stranded in space.",
+      seen: true,
+      genre: "Horror",
     },
     {
       id: 4,
-      title: 'Inception',
-      image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRS3SYg9fFcXLvbebCqOsbMnF2SwNKUACmrAA&s',
-      description: 'A thief enters dreams to steal corporate secrets.',
-      watched: false,
+      title: "Inception",
+      image: "https://via.placeholder.com/200x300",
+      description:
+        "A thief who steals corporate secrets through dream-sharing technology is given the task of planting an idea.",
+      seen: false,
+      genre: "Action",
     },
-    // Add the rest of your movie objects
   ]);
 
-  const handleMarkWatched = (id) => {
+  const handleMarkSeen = (id) => {
     setMovies((prevMovies) =>
       prevMovies.map((movie) =>
-        movie.id === id ? { ...movie, watched: true } : movie
+        movie.id === id ? { ...movie, seen: true } : movie
       )
     );
+    setExpandedMovieId(null);
   };
 
   const handleDelete = (id) => {
     setMovies((prevMovies) => prevMovies.filter((movie) => movie.id !== id));
+    setExpandedMovieId(null);
   };
 
-  const filteredMovies = movies
-    .filter((movie) =>
-      activeTab === 'watchlist' ? !movie.watched : movie.watched
-    )
-    .filter((movie) =>
-      movie.title.toLowerCase().includes(searchQuery.toLowerCase())
-    );
+  const handleExpand = (id) => {
+    setExpandedMovieId(id === expandedMovieId ? null : id);
+  };
+
+  const filteredMovies = movies.filter((movie) =>
+    movie.title.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  useEffect(() => {
+    setIsSearching(searchQuery !== "");
+  }, [searchQuery]);
+
+  const categories = {
+    continueWatching: {
+      title: "Action",
+      movies: movies.filter((m) => m.genre === "Action"),
+    },
+    recommended: {
+      title: "Anime",
+      movies: movies.filter((m) => m.genre === "Anime"),
+    },
+    trending: {
+      title: "Horror",
+      movies: movies.filter((m) => m.genre === "Horror"),
+    },
+  };
+
+  const expandedMovie = movies.find((movie) => movie.id === expandedMovieId);
 
   return (
-    <div
-      className={`min-h-screen ${
-        isDarkMode ? 'bg-gray-900 text-white' : 'bg-granite-softWhite'
-      }`}
-    >
+    <div className={`min-h-screen ${isDarkMode ? "bg-gray-900" : "bg-gray-100"}`}>
       <Header />
 
-      {/* Add Padding to Prevent Header Overlap */}
-      <main className="container mx-auto px-8 py-6">
+      <main className="pt-20 px-4 md:px-8">
         {/* Search Bar */}
         <div className="mb-8">
           <div className="relative max-w-md mx-auto">
@@ -79,76 +169,54 @@ function Dashboard() {
               onChange={(e) => setSearchQuery(e.target.value)}
               className={`w-full px-4 py-2 rounded-md border ${
                 isDarkMode
-                  ? 'bg-gray-700 text-white border-gray-600'
-                  : 'bg-white border-granite-medium'
-              } focus:outline-none focus:border-granite-dark`}
+                  ? "bg-gray-700 text-white border-gray-600"
+                  : "bg-white border-gray-300"
+              } focus:outline-none focus:border-blue-500`}
             />
-            <span className="absolute right-3 top-2.5 text-granite-medium">
-              &#128269;
+            <span className="absolute right-3 top-2.5 text-gray-400">
+              🔍
             </span>
           </div>
         </div>
 
-        {/* Tabs */}
-        <div className="flex space-x-2 mb-6">
-  <button
-    onClick={() => setActiveTab('watchlist')}
-    className={`px-6 py-3 rounded-full font-nunito text-lg flex items-center justify-center transition duration-500 ${
-      activeTab === 'watchlist'
-        ? isDarkMode
-          ? 'bg-[#5FA5B3] text-white hover:bg-[#6FB6C5]' // Lighter blue for dark mode
-          : 'bg-[#8BC8D4] text-white hover:bg-[#A1D8E0]' // Even lighter blue for light mode
-        : isDarkMode
-        ? 'bg-gray-700 text-gray-300 hover:bg-gray-600'
-        : 'bg-granite-light text-granite-dark hover:bg-granite-medium'
-    }`}
-  >
-    <span className="mr-2">📋</span>
-    Watchlist
-  </button>
-  <button
-    onClick={() => setActiveTab('seen')}
-    className={`px-6 py-3 rounded-full font-nunito text-lg flex items-center justify-center transition duration-500 ${
-      activeTab === 'seen'
-        ? isDarkMode
-          ? 'bg-[#6FB5A4] text-white hover:bg-[#80C5B3]' // Lighter green for dark mode
-          : 'bg-[#A1D9C8] text-white hover:bg-[#B2E4D6]' // Even lighter green for light mode
-        : isDarkMode
-        ? 'bg-gray-700 text-gray-300 hover:bg-gray-600'
-        : 'bg-granite-light text-granite-dark hover:bg-granite-medium'
-    }`}
-  >
-    <span className="mr-2">👁️</span>
-    Seen
-  </button>
-</div>
-
-
-        {/* Movie Grid */}
-        <section>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {filteredMovies.length > 0 ? (
-              filteredMovies.map((movie) => (
-                <MovieCard
-                  key={movie.id}
-                  movie={movie}
-                  onMarkWatched={handleMarkWatched}
-                  onDelete={handleDelete}
-                  isDarkMode={isDarkMode}
-                />
-              ))
-            ) : (
-              <p
-                className={`text-center ${
-                  isDarkMode ? 'text-gray-400' : 'text-granite-medium'
-                }`}
-              >
-                No movies match your search.
-              </p>
-            )}
+        {/* Movies Grid */}
+        {isSearching ? (
+          <div className="flex flex-wrap justify-start gap-4 px-8">
+            {filteredMovies.map((movie) => (
+              <MovieCard
+                key={movie.id}
+                movie={movie}
+                onMarkSeen={handleMarkSeen}
+                onDelete={handleDelete}
+                onExpand={handleExpand}
+                isExpanded={movie.id === expandedMovieId}
+              />
+            ))}
           </div>
-        </section>
+        ) : (
+          Object.entries(categories).map(([key, category]) => (
+            <MovieRow
+              key={key}
+              title={category.title}
+              movies={category.movies}
+              onMarkSeen={handleMarkSeen}
+              onDelete={handleDelete}
+              onExpand={handleExpand}
+              expandedMovieId={expandedMovieId}
+            />
+          ))
+        )}
       </main>
+
+      {/* Expanded Movie Card */}
+      {expandedMovie && (
+        <ExpandedMovieCard
+          movie={expandedMovie}
+          onMarkSeen={handleMarkSeen}
+          onDelete={handleDelete}
+          onCollapse={() => setExpandedMovieId(null)}
+        />
+      )}
     </div>
   );
 }

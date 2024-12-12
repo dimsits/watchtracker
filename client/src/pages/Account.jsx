@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Header from '../components/Header'; // Import the Header component
 import { useTheme } from '../contexts/ThemeContext';
 
@@ -44,10 +44,24 @@ function Account() {
     window.location.href = '/login'; // Redirect to login page
   };
 
+  // Close dropdown on click outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (!event.target.closest('.dropdown-menu') && !event.target.closest('.dropdown-button')) {
+        setShowMenu(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
   return (
     <div className={`min-h-screen ${isDarkMode ? 'bg-gray-900 text-white' : 'bg-granite-softWhite'}`}>
       <Header /> {/* Replaced navigation bar with the Header component */}
-      <main className="container mx-auto px-6 py-8">
+      <main className="pt-20 px-4 md:px-8">
         <div className={`${isDarkMode ? 'bg-gray-800' : 'bg-white'} rounded-lg shadow-md p-12 max-w-5xl mx-auto`}>
           {/* Profile Header */}
           <div className="flex items-center justify-between mb-8">
@@ -73,13 +87,13 @@ function Account() {
             <div className="relative">
               <button
                 onClick={() => setShowMenu((prev) => !prev)}
-                className={`${isDarkMode ? 'text-white' : 'text-granite-dark'} hover:text-granite-medium focus:outline-none`}
+                className={`${isDarkMode ? 'text-white' : 'text-granite-dark'} hover:text-granite-medium focus:outline-none dropdown-button`}
               >
                 &#8942; {/* Vertical three dots */}
               </button>
               {showMenu && (
                 <div
-                  className={`absolute right-0 mt-2 w-40 ${isDarkMode ? 'bg-gray-700' : 'bg-white'} border ${
+                  className={`dropdown-menu absolute right-0 mt-2 w-40 ${isDarkMode ? 'bg-gray-700' : 'bg-white'} border ${
                     isDarkMode ? 'border-gray-600' : 'border-granite-light'
                   } shadow-lg rounded-md`}
                 >
@@ -115,7 +129,7 @@ function Account() {
 
           {/* Form Section */}
           <form onSubmit={handleSave} className="space-y-6">
-            <div className="grid grid-cols-2 gap-8">
+          <div className="grid grid-cols-2 gap-8">
               {/* Full Name */}
               <div>
                 <label className={`block text-lg ${isDarkMode ? 'text-white' : 'text-granite-dark'} mb-2`}>
@@ -189,7 +203,9 @@ function Account() {
                 <button
                   type="submit"
                   className={`${
-                    isDarkMode ? 'bg-blue-600 hover:bg-blue-700' : 'bg-granite-dark hover:bg-granite-medium'
+                    isDarkMode 
+                    ? "bg-darkGranite-button hover:bg-darkGranite-hover text-sm font-semibold text-granite-softWhite"
+                    : "bg-granite-medium hover:bg-granite-light  text-sm font-semibold text-granite-softWhite"
                   } text-white py-3 px-6 rounded-lg transition duration-300`}
                 >
                   Save Changes
@@ -197,7 +213,11 @@ function Account() {
                 <button
                   type="button"
                   onClick={handleCancel}
-                  className="bg-red-500 text-white py-3 px-6 rounded-lg hover:bg-red-600 transition duration-300"
+                  className={`px-6 py-2 rounded-md text-sm transition ${
+                    isDarkMode
+                      ? "bg-gray-700 hover:bg-gray-600 font-semibold text-sm text-granite-softWhite"
+                      : "bg-gray-300 hover:bg-gray-400 font-semibold text-sm text-granite-softWhite"
+                  }`}
                 >
                   Cancel
                 </button>
