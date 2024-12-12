@@ -47,7 +47,6 @@ function Header() {
             { name: "My List", path: "/dashboard" },
             { name: "Movies", path: "/movies" },
             { name: "Profile", path: "/account" },
-            { name: "Logout", path: "/login" },
           ].map((link, index) => (
             <a
               key={index}
