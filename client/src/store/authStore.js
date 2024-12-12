@@ -31,14 +31,31 @@ const useAuthStore = create((set) => ({
   register: async (userDetails) => {
     set({ loading: true, error: null });
     try {
-      const response = await axios.post('http://localhost:5000/api/auth/register', userDetails);
+      // Transform userDetails to match API requirements
+      const payload = {
+        name: userDetails.fullName, // Map `fullName` to `name`
+        username: userDetails.username,
+        email: userDetails.email,
+        password: userDetails.password,
+      };
+  
+      console.log('Sending payload to API:', payload); // Debug log
+  
+      const response = await axios.post('http://localhost:5000/api/auth/register', payload, {
+        headers: {
+          'Content-Type': 'application/json', // Ensure the correct content type
+        },
+      });
+  
+      console.log('API Response:', response.data); // Debug log
+  
       set({
-        user: response.data, // Set user data from API response
+        user: response.data, // Update Zustand state with API response
         isAuthenticated: true,
         loading: false,
       });
     } catch (error) {
-      console.error('Registration error:', error);
+      console.error('Registration error:', error); // Debug log
       set({
         error: error.response?.data?.message || 'Registration failed',
         loading: false,

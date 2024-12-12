@@ -17,44 +17,20 @@ function Register() {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLocalError("");
+    console.log('Form Data Submitted:', formData); // Debug: Verify data from form
 
-    if (
-      !formData.fullName ||
-      !formData.username ||
-      !formData.email ||
-      !formData.password ||
-      !formData.confirmPassword
-    ) {
-      setLocalError("All fields are required");
-      return;
-    }
+    await register(formData);
 
-    if (formData.password !== formData.confirmPassword) {
-      setLocalError("Passwords do not match");
-      return;
-    }
-
-    try {
-      await register({
-        fullName: formData.fullName,
-        username: formData.username,
-        email: formData.email,
-        password: formData.password,
-      });
-      
-      // If registration is successful, navigate to dashboard
-      navigate("/dashboard");
-    } catch (err) {
-      setLocalError("Failed to register. Please try again.");
+    // Redirect only if registration succeeds
+    if (useAuthStore.getState().isAuthenticated) {
+      navigate('/dashboard');
+    } else {
+      console.error('Registration failed:', error); // Debug: Display error if exists
     }
   };
 
