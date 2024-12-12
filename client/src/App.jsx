@@ -8,7 +8,7 @@ import Dashboard from './pages/Dashboard';
 import Seen from './pages/Seen';
 import Movies from './pages/Movies';
 import Account from './pages/Account';
-import MovieDetails from './pages/MovieDetails';
+import MovieDetails from './components/MovieDetails';
 
 function App() {
   return (
@@ -19,6 +19,7 @@ function App() {
             <Routes>
               <Route path="/register" element={<Register />} />
               <Route path="/" element={<Login />} />
+              <Route path="/login" element={<Login />} />
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/seen" element={<Seen />} />
               <Route path="/movies" element={<Movies />} />
