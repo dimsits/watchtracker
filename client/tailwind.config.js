@@ -13,6 +13,10 @@ export default {
           light: "#A8DFF1", // Light blue
           softWhite: "#F5F5F5", // Soft white
         },
+        darkGranite: {
+          button: "#2B5E73", // Button background color in dark mode
+          hover: "#194954", // Hover color in dark mode
+        },
       },
     },
   },

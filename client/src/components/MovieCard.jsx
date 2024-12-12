@@ -1,20 +1,26 @@
 import { useState } from 'react';
+import { useTheme } from '../contexts/ThemeContext';
 
 function MovieCard({ movie, onMarkWatched, onDelete }) {
+  const { isDarkMode } = useTheme(); // Use the theme context
   const [showMenu, setShowMenu] = useState(false);
 
   const handleWatched = () => {
     setShowMenu(false);
-    onMarkWatched(movie.id); // Mark movie as watched
+    onMarkWatched(movie.id);
   };
 
   const handleDelete = () => {
     setShowMenu(false);
-    onDelete(movie.id); // Delete movie
+    onDelete(movie.id);
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-md overflow-hidden transition duration-300 hover:shadow-lg">
+    <div
+      className={`rounded-lg shadow-md overflow-hidden transition duration-300 hover:shadow-lg ${
+        isDarkMode ? 'bg-gray-800 text-white' : 'bg-white text-black'
+      }`}
+    >
       <div className="relative">
         <img
           src={movie.image}
@@ -26,25 +32,40 @@ function MovieCard({ movie, onMarkWatched, onDelete }) {
         <div className="absolute bottom-4 right-4">
           <button
             onClick={() => setShowMenu((prev) => !prev)}
-            className="text-granite-dark hover:text-granite-medium focus:outline-none"
+            className={`hover:text-granite-medium focus:outline-none ${
+              isDarkMode ? 'text-white' : 'text-granite-dark'
+            }`}
           >
             &#8942; {/* Vertical three dots */}
           </button>
 
           {showMenu && (
-            <div className="absolute right-0 mt-2 bg-white border border-granite-light shadow-lg rounded-md w-32">
-              {/* Conditionally Render Watched Option */}
+            <div
+              className={`absolute right-0 mt-2 w-32 rounded-md shadow-lg ${
+                isDarkMode
+                  ? 'bg-gray-700 border-gray-600'
+                  : 'bg-white border-granite-light'
+              } border`}
+            >
               {!movie.watched && (
                 <button
                   onClick={handleWatched}
-                  className="block w-full text-left px-4 py-2 text-granite-dark hover:bg-granite-light transition"
+                  className={`block w-full text-left px-4 py-2 transition ${
+                    isDarkMode
+                      ? 'text-white hover:bg-gray-600'
+                      : 'text-granite-dark hover:bg-granite-light'
+                  }`}
                 >
                   Watched
                 </button>
               )}
               <button
                 onClick={handleDelete}
-                className="block w-full text-left px-4 py-2 text-red-500 hover:bg-red-100 transition"
+                className={`block w-full text-left px-4 py-2 transition ${
+                  isDarkMode
+                    ? 'text-red-400 hover:bg-gray-600'
+                    : 'text-red-500 hover:bg-red-100'
+                }`}
               >
                 Delete
               </button>
@@ -53,10 +74,18 @@ function MovieCard({ movie, onMarkWatched, onDelete }) {
         </div>
       </div>
       <div className="p-4">
-        <h3 className="text-lg font-bold font-nunito text-granite-dark mb-2">
+        <h3
+          className={`text-lg font-bold mb-2 ${
+            isDarkMode ? 'text-white' : 'text-granite-dark'
+          }`}
+        >
           {movie.title}
         </h3>
-        <p className="text-sm text-granite-medium line-clamp-2">
+        <p
+          className={`text-sm line-clamp-2 ${
+            isDarkMode ? 'text-gray-300' : 'text-granite-medium'
+          }`}
+        >
           {movie.description}
         </p>
       </div>
