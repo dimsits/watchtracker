@@ -59,5 +59,28 @@ async function loginUser(req, res) {
     }
 }
 
-module.exports = { registerUser, loginUser };
+const tokenBlacklist = new Set();
+
+async function logoutUser(req, res) {
+    const token = req.headers.authorization?.split(' ')[1];
+
+    if (!token) {
+        return res.status(400).json({ error: 'Token is required' });
+    }
+
+    try {
+        // Add token to blacklist
+        tokenBlacklist.add(token);
+        res.status(200).json({ message: 'User logged out successfully' });
+    } catch (error) {
+        res.status(500).json({ error: 'Failed to logout' });
+    }
+}
+
+// Middleware to check token blacklist
+function isTokenBlacklisted(token) {
+    return tokenBlacklist.has(token);
+}
+
+module.exports = { registerUser, loginUser, logoutUser, isTokenBlacklisted };
 

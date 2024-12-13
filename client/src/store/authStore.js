@@ -83,7 +83,7 @@ const useAuthStore = create((set) => ({
   logout: async () => {
     set({ loading: true, error: null });
     try {
-      await axios.post('/api/auth/logout'); // Optionally call logout endpoint
+      await axios.post('http:localhost:5000/api/auth/logout'); // Optionally call logout endpoint
       set({
         user: null,
         isAuthenticated: false,

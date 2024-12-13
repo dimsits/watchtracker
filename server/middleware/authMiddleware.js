@@ -10,6 +10,11 @@ function authMiddleware(req, res, next) {
         return res.status(401).json({ error: 'Unauthorized' });
     }
 
+    // Check if token is blacklisted
+    if (isTokenBlacklisted(token)) {
+        return res.status(401).json({ error: 'Token has been invalidated' });
+    }
+
     try {
         const user = jwt.verify(token, JWT_SECRET);
         req.user = user;
@@ -18,5 +23,6 @@ function authMiddleware(req, res, next) {
         res.status(401).json({ error: 'Invalid Token' });
     }
 }
+
 
 module.exports = authMiddleware;

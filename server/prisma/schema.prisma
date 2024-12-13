@@ -15,6 +15,7 @@ model User {
   password      String
   role          String    
   watchlists    Watchlist[]
+  likes         Like[]
 }
 
 model Movies {
@@ -32,6 +33,8 @@ model Movies {
   poster_url    String
   imdb_rating   Float
   watchlists    Watchlist[]
+  likes         Like[]
+  like_count    Int       @default(0)
 }
 
 model Watchlist {
@@ -39,9 +42,18 @@ model Watchlist {
   user_id       String
   movie_id      String
   watched       Boolean  @default(false)
-  rating        Int?
   notes         String?
+  user          User     @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
+  movie         Movies   @relation(fields: [movie_id], references: [movie_id], onDelete: Cascade)
+}
+
+model Like {
+  like_id       String   @id @default(uuid())
+  user_id       String
+  movie_id      String
 
   user          User     @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
   movie         Movies   @relation(fields: [movie_id], references: [movie_id], onDelete: Cascade)
+
+  @@unique([user_id, movie_id]) // Ensures a user can like a movie only once
 }
