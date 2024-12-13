@@ -13,7 +13,7 @@ function MovieAddCard({ movie, onAddToWatchlist }) {
     >
       <div className="relative">
         <img
-          src={movie.image}
+          src={movie.poster} // Use the `poster` property for the image source
           alt={movie.title}
           className="w-full h-[300px] object-cover"
         />

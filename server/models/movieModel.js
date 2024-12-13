@@ -39,7 +39,7 @@ const fetchMovieFromOmdb = async (query, isId = false) => {
 
 // Function to map OMDb data to Prisma Movie model
 const mapOmdbToPrisma = (movieData) => ({
-  imdbID: movieData.imdbID || '',
+  movie_id: movieData.imdbID || '', // Use OMDb's IMDb ID for `movie_id`
   title: movieData.Title || 'N/A',
   year: movieData.Year || 'N/A',
   genre: movieData.Genre || 'N/A',
@@ -52,6 +52,7 @@ const mapOmdbToPrisma = (movieData) => ({
   awards: movieData.Awards || 'N/A',
   poster_url: movieData.Poster || '',
   imdb_rating: parseFloat(movieData.imdbRating) || 0.0,
+  like_count: 0, // Default value for new movies
 });
 
 // Create a new movie in the database using IMDb ID
@@ -61,7 +62,7 @@ const createMovie = async (movieId) => {
     const movieData = await fetchMovieFromOmdb(movieId, true);
 
     // Map the response data to Prisma model
-    const movie = await prisma.movie.create({
+    const movie = await prisma.movies.create({
       data: mapOmdbToPrisma(movieData),
     });
 
@@ -76,11 +77,10 @@ const createMovie = async (movieId) => {
 const searchMoviesByTitle = async (title) => {
   try {
     // First, check if the movies exist in the database
-    const existingMovies = await prisma.movie.findMany({
+    const existingMovies = await prisma.movies.findMany({
       where: {
         title: {
-          contains: title,
-          mode: 'insensitive', // Case insensitive search
+          contains: title, // Remove `mode: 'insensitive'` as it is unsupported
         },
       },
     });
@@ -118,17 +118,16 @@ const searchMoviesByTitle = async (title) => {
     }
 
     // Create movies in the database
-    await prisma.movie.createMany({
+    await prisma.movies.createMany({
       data: validMovies,
       skipDuplicates: true, // Skips creating duplicates based on unique constraints
     });
 
     // Fetch and return the newly created movies
-    const newMovies = await prisma.movie.findMany({
+    const newMovies = await prisma.movies.findMany({
       where: {
         title: {
           contains: title,
-          mode: 'insensitive',
         },
       },
     });
@@ -139,6 +138,7 @@ const searchMoviesByTitle = async (title) => {
     throw new Error('Failed to search movies');
   }
 };
+
 
 module.exports = {
   createMovie,
