@@ -11,8 +11,6 @@ function Movies() {
 
   const handleSearch = async () => {
     if (searchQuery.trim() === '') {
-      // If searchQuery is empty, you can decide to either do nothing or reset movies.
-      // For now, let's just clear results if empty.
       setMovies([]);
       return;
     }
@@ -26,7 +24,13 @@ function Movies() {
     }
   };
 
-  // If you want to filter results further on the client side, you can still do so:
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault(); // Prevent the default form submission (if inside a form)
+      handleSearch();
+    }
+  };
+
   const filteredMovies = movies.filter((movie) =>
     movie.title.toLowerCase().includes(searchQuery.toLowerCase())
   );
@@ -48,6 +52,7 @@ function Movies() {
               placeholder="Search movies..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
+              onKeyDown={handleKeyDown} // Added onKeyDown handler
               className={`w-full px-4 py-2 rounded-md border ${
                 isDarkMode
                   ? 'bg-gray-700 text-white border-gray-600'
@@ -75,14 +80,13 @@ function Movies() {
                   movie={{
                     id: movie.movie_id,
                     title: movie.title,
-                    description: movie.plot, // Assuming 'plot' is used as the description
-                    poster: movie.poster_url, // Pass poster_url to the component
+                    description: movie.plot,
+                    poster: movie.poster_url,
                   }}
                   onAddToWatchlist={(id) => {
                     // Your add to watchlist logic goes here
                   }}
                 />
-
               ))
             ) : (
               <p
