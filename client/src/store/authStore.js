@@ -4,6 +4,7 @@ import axios from 'axios';
 // Define the Zustand store
 const useAuthStore = create((set) => ({
   user: null, // Initial user state
+  token: null, // Token stored in memory
   isAuthenticated: false, // Authentication status
   loading: false, // To manage loading states
   error: null, // For error handling
@@ -23,59 +24,21 @@ const useAuthStore = create((set) => ({
         },
       });
 
-      // Save token to localStorage or another secure storage
       const token = response.data.token; // Assuming the API returns a token
-      localStorage.setItem('authToken', token);
-
       set({
         user: response.data.user, // Assuming response includes user details
+        token, // Store the token in memory
         isAuthenticated: true,
         loading: false,
       });
     } catch (error) {
-      console.error('Login error:', error);
+      console.log('Login error:', error);
       set({
         error: error.response?.data?.message || 'Login failed',
         loading: false,
       });
 
-      // Explicitly throw the error so the calling code can handle it
       throw new Error(error.response?.data?.message || 'Login failed');
-    }
-  },
-
-  // Action to register a user
-  register: async (userDetails) => {
-    set({ loading: true, error: null });
-    try {
-      const payload = {
-        name: userDetails.fullName, // Map `fullName` to `name`
-        username: userDetails.username,
-        email: userDetails.email,
-        password: userDetails.password,
-      };
-
-      const response = await axios.post('http://localhost:5000/api/auth/register', payload, {
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-
-      // Save token to localStorage or another secure storage
-      const token = response.data.token; // Assuming the API returns a token
-      localStorage.setItem('authToken', token);
-
-      set({
-        user: response.data.user, // Assuming response includes user details
-        isAuthenticated: true,
-        loading: false,
-      });
-    } catch (error) {
-      console.error('Registration error:', error);
-      set({
-        error: error.response?.data?.message || 'Registration failed',
-        loading: false,
-      });
     }
   },
 
@@ -85,13 +48,13 @@ const useAuthStore = create((set) => ({
     try {
       await axios.post('http://localhost:5000/api/auth/logout', {}, {
         headers: {
-          Authorization: `Bearer ${localStorage.getItem('authToken')}`,
+          Authorization: `Bearer ${useAuthStore.getState().token}`,
         },
       });
-  
-      localStorage.removeItem('authToken'); // Remove the token
+
       set({
         user: null,
+        token: null, // Clear the token from memory
         isAuthenticated: false,
         loading: false,
       });
@@ -103,13 +66,12 @@ const useAuthStore = create((set) => ({
       });
     }
   },
-  
 
   // Action to fetch the authenticated user's session
   fetchSession: async () => {
     set({ loading: true, error: null });
     try {
-      const token = localStorage.getItem('authToken'); // Retrieve token
+      const token = useAuthStore.getState().token;
       if (!token) {
         throw new Error('No authentication token found');
       }
@@ -127,9 +89,9 @@ const useAuthStore = create((set) => ({
       });
     } catch (error) {
       console.error('Session fetch error:', error);
-      localStorage.removeItem('authToken'); // Clear token on failure
       set({
         user: null,
+        token: null, // Clear the token from memory
         isAuthenticated: false,
         loading: false,
       });

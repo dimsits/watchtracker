@@ -3,11 +3,14 @@ import axios from 'axios';
 import MovieAddCard from '../components/MovieAddCard';
 import Header from '../components/Header';
 import { useTheme } from '../contexts/ThemeContext';
+import useAuthStore from '../store/authStore';
 
 function Movies() {
   const { isDarkMode } = useTheme();
   const [movies, setMovies] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
 
   const handleSearch = async () => {
     if (searchQuery.trim() === '') {
@@ -16,11 +19,19 @@ function Movies() {
     }
 
     try {
-      const response = await axios.post('http://localhost:5000/api/movies/search', { title: searchQuery });
+      setIsLoading(true);
+      const response = await axios.post(
+        'http://localhost:5000/api/movies/search',
+        { title: searchQuery }
+      );
       setMovies(response.data);
+      setErrorMessage('');
     } catch (error) {
       console.error('Error searching movies:', error);
+      setErrorMessage('Error fetching movies. Please try again.');
       setMovies([]);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -30,6 +41,41 @@ function Movies() {
       handleSearch();
     }
   };
+
+  const handleAddToWatchlist = async (movie_id) => {
+    console.log('Movie ID being added:', movie_id);
+  
+    try {
+      const token = useAuthStore.getState().token;
+  
+      // Log the token for debugging
+      console.log('Auth Token from Zustand:', token);
+  
+      if (!token) {
+        alert('You are not authenticated. Please log in.');
+        return;
+      }
+  
+      const response = await axios.post(
+        'http://localhost:5000/api/watchlist/add',
+        { movie_id }, // Request body
+        {
+          headers: {
+            Authorization: `Bearer ${token}`, // Attach token in headers
+          },
+        }
+      );
+  
+      console.log('Response:', response.data);
+      alert('Movie added to watchlist successfully!');
+    } catch (error) {
+      console.error('Error adding to watchlist:', error.response ? error.response.data : error);
+      alert(
+        error.response?.data?.message || 'Failed to add movie to watchlist. Please try again later.'
+      );
+    }
+  };
+  
 
   const filteredMovies = movies.filter((movie) =>
     movie.title.toLowerCase().includes(searchQuery.toLowerCase())
@@ -65,9 +111,12 @@ function Movies() {
                 isDarkMode ? 'bg-granite-dark' : 'bg-blue-500 hover:bg-blue-600'
               }`}
             >
-              Search
+              {isLoading ? 'Loading...' : 'Search'}
             </button>
           </div>
+          {errorMessage && (
+            <p className="text-red-500 text-sm mt-2 text-center">{errorMessage}</p>
+          )}
         </div>
 
         {/* Movies Grid */}
@@ -77,15 +126,8 @@ function Movies() {
               filteredMovies.map((movie) => (
                 <MovieAddCard
                   key={movie.movie_id}
-                  movie={{
-                    id: movie.movie_id,
-                    title: movie.title,
-                    description: movie.plot,
-                    poster: movie.poster_url,
-                  }}
-                  onAddToWatchlist={(id) => {
-                    // Your add to watchlist logic goes here
-                  }}
+                  movie={movie}
+                  onAddToWatchlist={handleAddToWatchlist} // Pass handler
                 />
               ))
             ) : (

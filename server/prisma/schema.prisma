@@ -45,7 +45,10 @@ model Watchlist {
   notes         String?
   user          User     @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
   movie         Movies   @relation(fields: [movie_id], references: [movie_id], onDelete: Cascade)
+
+  @@unique([user_id, movie_id]) // Compound unique constraint
 }
+
 
 model Like {
   like_id       String   @id @default(uuid())
