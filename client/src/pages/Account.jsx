@@ -1,13 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import Header from '../components/Header'; // Import the Header component
 import { useTheme } from '../contexts/ThemeContext';
+import useAuthStore from '../store/authStore'; // Import the Zustand store
+import { useNavigate } from 'react-router-dom';
 
 function Account() {
   const { isDarkMode, toggleTheme } = useTheme();
+  const { logout, user } = useAuthStore(); // Access logout action and user data from the store
+  const navigate = useNavigate(); // Use navigate for redirection
+
   const [userInfo, setUserInfo] = useState({
-    fullName: 'Seth Demeterio',
-    username: 'The Dems',
-    email: 'sweatyunderwear@gmail.com',
+    fullName: user?.name || 'John Doe',
+    username: user?.username || 'johndoe',
+    email: user?.email || 'john@example.com',
     password: '••••••••',
   });
 
@@ -40,8 +45,13 @@ function Account() {
     setIsEditing(false);
   };
 
-  const handleLogout = () => {
-    window.location.href = '/login'; // Redirect to login page
+  const handleLogout = async () => {
+    try {
+      await logout(); // Call the logout action from Zustand store
+      navigate('/login'); // Redirect to login page after logout
+    } catch (error) {
+      console.error('Logout failed:', error);
+    }
   };
 
   // Close dropdown on click outside
@@ -129,7 +139,7 @@ function Account() {
 
           {/* Form Section */}
           <form onSubmit={handleSave} className="space-y-6">
-          <div className="grid grid-cols-2 gap-8">
+            <div className="grid grid-cols-2 gap-8">
               {/* Full Name */}
               <div>
                 <label className={`block text-lg ${isDarkMode ? 'text-white' : 'text-granite-dark'} mb-2`}>
@@ -164,39 +174,6 @@ function Account() {
               </div>
             </div>
 
-            {/* Password */}
-            <div>
-              <label className={`block text-lg ${isDarkMode ? 'text-white' : 'text-granite-dark'} mb-2`}>
-                Password
-              </label>
-              <input
-                type="password"
-                name="password"
-                value={editedUserInfo.password}
-                onChange={handleInputChange}
-                disabled={!isEditing}
-                className={`w-full p-4 border rounded-lg ${
-                  isDarkMode ? 'bg-gray-700 text-white border-gray-600' : 'bg-gray-50 text-black border-gray-300'
-                } ${isEditing ? 'focus:outline-none focus:ring-2 focus:ring-blue-500' : 'cursor-not-allowed'}`}
-              />
-            </div>
-
-            {/* Email Address */}
-            <div>
-              <label className={`block text-lg ${isDarkMode ? 'text-white' : 'text-granite-dark'} mb-2`}>
-                Email Address
-              </label>
-              <div className={`flex items-center space-x-4 p-4 ${isDarkMode ? 'bg-gray-700' : 'bg-gray-50'} rounded-lg`}>
-                <div className="w-12 h-12 bg-blue-200 text-blue-600 flex items-center justify-center rounded-full">
-                  ✉
-                </div>
-                <div>
-                  <p className={`${isDarkMode ? 'text-white' : 'text-granite-dark'} text-lg`}>{userInfo.email}</p>
-                  <p className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-granite-medium'}`}>1 month ago</p>
-                </div>
-              </div>
-            </div>
-
             {/* Save and Cancel Buttons */}
             {isEditing && (
               <div className="flex space-x-4">
@@ -226,38 +203,6 @@ function Account() {
           </form>
         </div>
       </main>
-
-      {/* Appearance Modal */}
-      {showAppearanceModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className={`${isDarkMode ? 'bg-gray-800' : 'bg-white'} p-6 rounded-lg shadow-lg`}>
-            <h2 className={`${isDarkMode ? 'text-white' : 'text-black'} text-lg font-bold mb-4`}>Appearance Settings</h2>
-            <div className="flex items-center space-x-4">
-              <button
-                onClick={toggleTheme}
-                className={`w-12 h-6 flex items-center rounded-full p-1 cursor-pointer transition-all duration-300 ${
-                  isDarkMode ? 'bg-gray-700' : 'bg-gray-300'
-                }`}
-              >
-                <div
-                  className={`w-5 h-5 rounded-full shadow-md transform transition-transform duration-300 ${
-                    isDarkMode ? 'translate-x-6 bg-yellow-400' : 'translate-x-0 bg-gray-800'
-                  }`}
-                ></div>
-              </button>
-              <span className={`${isDarkMode ? 'text-white' : 'text-black'} text-sm font-nunito`}>
-                {isDarkMode ? 'Dark Mode' : 'Light Mode'}
-              </span>
-            </div>
-            <button
-              onClick={() => setShowAppearanceModal(false)}
-              className="mt-6 bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 transition"
-            >
-              Close
-            </button>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
