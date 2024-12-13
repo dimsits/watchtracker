@@ -7,12 +7,13 @@ function Register() {
   const { register, loading, error } = useAuthStore();
 
   const [formData, setFormData] = useState({
-    fullName: "",
+    name: "",     
     username: "",
     email: "",
     password: "",
     confirmPassword: "",
   });
+  
   const [localError, setLocalError] = useState("");
 
   const handleChange = (e) => {
@@ -23,9 +24,8 @@ function Register() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     console.log('Form Data Submitted:', formData); // Debug: Verify data from form
-
-    await register(formData);
-
+    const { confirmPassword, ...registrationData } = formData;
+    await register(registrationData);
     // Redirect only if registration succeeds
     if (useAuthStore.getState().isAuthenticated) {
       navigate('/dashboard');
@@ -33,6 +33,7 @@ function Register() {
       console.error('Registration failed:', error); // Debug: Display error if exists
     }
   };
+  
 
   return (
     <div className="min-h-screen bg-granite-softWhite flex flex-col">
@@ -82,16 +83,17 @@ function Register() {
             )}
 
             <div className="space-y-8">
-              <input
-                id="fullName"
-                name="fullName"
-                type="text"
-                value={formData.fullName}
-                onChange={handleChange}
-                placeholder="Full Name"
-                required
-                className="bg-granite-softWhite block w-full border-b border-granite-medium focus:outline-none focus:border-granite-dark focus:ring-0"
-              />
+            <input
+              id="name"
+              name="name"
+              type="text"
+              value={formData.name}
+              onChange={handleChange}
+              placeholder="Name"
+              required
+              className="bg-granite-softWhite block w-full border-b border-granite-medium focus:outline-none focus:border-granite-dark focus:ring-0"
+            />
+
               <input
                 id="username"
                 name="username"

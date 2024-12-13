@@ -9,6 +9,33 @@ const useAuthStore = create((set) => ({
   loading: false, // To manage loading states
   error: null, // For error handling
 
+  // Action to register a new user
+  register: async (registrationData) => {
+    set({ loading: true, error: null });
+    try {
+      const response = await axios.post('http://localhost:5000/api/auth/register', registrationData, {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      const token = response.data.token; // Assuming the API returns a token
+      set({
+        user: response.data.user, // Assuming response includes user details
+        token,
+        isAuthenticated: true,
+        loading: false,
+      });
+    } catch (error) {
+      console.error('Registration error:', error);
+      set({
+        error: error.response?.data?.message || 'Registration failed',
+        loading: false,
+      });
+      throw new Error(error.response?.data?.message || 'Registration failed');
+    }
+  },
+
   // Action to log in the user
   login: async (credentials) => {
     set({ loading: true, error: null });
@@ -27,7 +54,7 @@ const useAuthStore = create((set) => ({
       const token = response.data.token; // Assuming the API returns a token
       set({
         user: response.data.user, // Assuming response includes user details
-        token, // Store the token in memory
+        token,
         isAuthenticated: true,
         loading: false,
       });

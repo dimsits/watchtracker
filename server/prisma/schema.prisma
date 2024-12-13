@@ -8,18 +8,20 @@ datasource db {
 }
 
 model User {
-  user_id       String    @id @default(uuid())
+  user_id       String     @id @default(uuid())
   username      String
   name          String
-  email         String    @unique
+  email         String     @unique
   password      String
   role          String    
   watchlists    Watchlist[]
-  likes         Like[]
+  reviews       Review[]   // Link to reviews by the user
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
 }
 
 model Movies {
-  movie_id      String    @id @default(uuid())
+  movie_id      String     @id @default(uuid())
   title         String
   year          String
   genre         String
@@ -33,30 +35,34 @@ model Movies {
   poster_url    String
   imdb_rating   Float
   watchlists    Watchlist[]
-  likes         Like[]
-  like_count    Int       @default(0)
+  reviews       Review[]   // Link to reviews for this movie
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
 }
 
 model Watchlist {
-  watchlist_id  String   @id @default(uuid())
+  watchlist_id  String     @id @default(uuid())
   user_id       String
   movie_id      String
-  watched       Boolean  @default(false)
+  watched       Boolean    @default(false)
   notes         String?
-  user          User     @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
-  movie         Movies   @relation(fields: [movie_id], references: [movie_id], onDelete: Cascade)
+  user          User       @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
+  movie         Movies     @relation(fields: [movie_id], references: [movie_id], onDelete: Cascade)
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
 
   @@unique([user_id, movie_id]) // Compound unique constraint
 }
 
-
-model Like {
-  like_id       String   @id @default(uuid())
+model Review {
+  review_id     String     @id @default(uuid())
   user_id       String
   movie_id      String
+  rating        Int        // Star rating (1 to 5)
+  user          User       @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
+  movie         Movies     @relation(fields: [movie_id], references: [movie_id], onDelete: Cascade)
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
 
-  user          User     @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
-  movie         Movies   @relation(fields: [movie_id], references: [movie_id], onDelete: Cascade)
-
-  @@unique([user_id, movie_id]) // Ensures a user can like a movie only once
+  @@unique([user_id, movie_id]) // Ensures a user can rate a movie only once
 }

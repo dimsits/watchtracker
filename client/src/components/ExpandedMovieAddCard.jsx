@@ -118,7 +118,7 @@ function ExpandedMovieAddCard({ movie, onAddToWatchlist, onCollapse }) {
             <div className="flex space-x-4 mt-4">
               {/* Since it's not in the watchlist yet, we add this button */}
               <button
-                onClick={() => onAddToWatchlist(movie.id)}
+                onClick={() => onAddToWatchlist(movie.movie_id)}
                 className={`px-6 py-2 rounded-md font-semibold text-sm transition ${
                   isDarkMode
                     ? "bg-darkGranite-button hover:bg-darkGranite-hover text-granite-softWhite"

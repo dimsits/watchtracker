@@ -21,7 +21,16 @@ async function registerUser(req, res) {
         const hashedPassword = await bcrypt.hash(password, 10);
         const user = await createUser({ username, name, email, role: "user", password: hashedPassword });
 
-        res.status(201).json({ message: 'User registered', user });
+        // Generate a token
+        const token = jwt.sign({ user_id: user.user_id, email: user.email, role: user.role }, JWT_SECRET, { expiresIn: '3h' });
+
+        res.status(201).json({ message: 'User registered', token, user: {
+            user_id: user.user_id,
+            username: user.username,
+            name: user.name,
+            email: user.email,
+            role: user.role
+        } });
     } catch (error) {
         console.log(error);
         res.status(500).json({ error: 'Failed to register' });
