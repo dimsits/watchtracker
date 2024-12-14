@@ -191,31 +191,32 @@ function Dashboard() {
         )}
 
         {/* All Movies Section */}
-        <section>
-          <h2
-            className={`text-2xl font-bold mb-4 ${
-              isDarkMode ? "text-white" : "text-gray-800"
-            }`}
-          >
-            All Movies
-          </h2>
-          <div className="flex flex-wrap justify-start gap-4 px-4">
-            {filteredMovies.map((item) => (
-              <MovieCard
-                key={item.movie.movie_id}
-                movie={{
-                  ...item.movie,
-                  watched: item.watched,
-                  notes: item.notes,
-                }}
-                onMarkSeen={handleMarkSeen}
-                onDelete={handleDelete}
-                onExpand={handleExpand}
-                isExpanded={item.movie.movie_id === expandedMovieId}
-              />
-            ))}
-          </div>
-        </section>
+<section>
+  <h2
+    className={`text-2xl font-bold mb-4 ${
+      isDarkMode ? "text-white" : "text-gray-800"
+    }`}
+  >
+    All Movies
+  </h2>
+  <div className="flex flex-wrap justify-center md:justify-start gap-6 px-6">
+    {filteredMovies.map((item) => (
+      <MovieCard
+        key={item.movie.movie_id}
+        movie={{
+          ...item.movie,
+          watched: item.watched,
+          notes: item.notes,
+        }}
+        onMarkSeen={handleMarkSeen}
+        onDelete={handleDelete}
+        onExpand={handleExpand}
+        isExpanded={item.movie.movie_id === expandedMovieId}
+      />
+    ))}
+  </div>
+</section>
+
       </main>
 
       {/* Expanded Movie Card */}
