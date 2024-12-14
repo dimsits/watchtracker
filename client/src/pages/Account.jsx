@@ -3,21 +3,27 @@ import Header from '../components/Header';
 import { useTheme } from '../contexts/ThemeContext';
 import useAuthStore from '../store/authStore';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 function Account() {
-  const { isDarkMode, toggleTheme } = useTheme();
-  const { logout, user } = useAuthStore();
+  const { isDarkMode } = useTheme();
+  const { logout, user, token } = useAuthStore();
   const navigate = useNavigate();
 
   const [userInfo, setUserInfo] = useState({
-    fullName: user?.name || 'John Doe',
+    name: user?.name || 'John Doe',
     username: user?.username || 'johndoe',
     email: user?.email || 'john@example.com',
-    password: '********', // Default censored password
   });
 
   const [isEditing, setIsEditing] = useState(false);
   const [editedUserInfo, setEditedUserInfo] = useState({ ...userInfo });
+  
+  // For password change
+  const [changePassword, setChangePassword] = useState(false);
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+
   const [showMenu, setShowMenu] = useState(false);
 
   const handleEdit = () => {
@@ -33,15 +39,59 @@ function Account() {
     }));
   };
 
-  const handleSave = (e) => {
+  const handleCurrentPasswordChange = (e) => {
+    setCurrentPassword(e.target.value);
+  };
+
+  const handleNewPasswordChange = (e) => {
+    setNewPassword(e.target.value);
+  };
+
+  const handleSave = async (e) => {
     e.preventDefault();
-    setUserInfo(editedUserInfo);
-    setIsEditing(false);
+
+    // Prepare data to send to the backend
+    const updateData = {
+      username: editedUserInfo.username,
+      name: editedUserInfo.name,
+      email: editedUserInfo.email,
+    };
+
+    // If user wants to change password
+    if (changePassword) {
+      if (!currentPassword || !newPassword) {
+        alert('Please provide both current and new password.');
+        return;
+      }
+      updateData.currentPassword = currentPassword;
+      updateData.newPassword = newPassword;
+    }
+
+    try {
+      const response = await axios.put('http://localhost:5000/api/users/edit', updateData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      // Update state with the returned user data
+      setUserInfo(response.data.user);
+      setIsEditing(false);
+      setChangePassword(false);
+      setCurrentPassword('');
+      setNewPassword('');
+    } catch (error) {
+      console.error('Failed to update user:', error);
+      alert(error.response?.data?.error || 'Failed to update user info');
+    }
   };
 
   const handleCancel = () => {
     setEditedUserInfo({ ...userInfo });
     setIsEditing(false);
+    setChangePassword(false);
+    setCurrentPassword('');
+    setNewPassword('');
   };
 
   const handleLogout = async () => {
@@ -55,7 +105,10 @@ function Account() {
 
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (!event.target.closest('.dropdown-menu') && !event.target.closest('.dropdown-button')) {
+      if (
+        !event.target.closest('.dropdown-menu') &&
+        !event.target.closest('.dropdown-button')
+      ) {
         setShowMenu(false);
       }
     };
@@ -76,7 +129,7 @@ function Account() {
             <div className="relative flex items-center space-x-6">
               <div>
                 <h3 className={`text-2xl font-nunito ${isDarkMode ? 'text-white' : 'text-granite-dark'}`}>
-                  {userInfo.fullName}
+                  {userInfo.name}
                 </h3>
                 <p className={`${isDarkMode ? 'text-gray-300' : 'text-granite-medium'} text-sm`}>
                   @{userInfo.username}
@@ -119,16 +172,16 @@ function Account() {
 
           {/* Form Section */}
           <form onSubmit={handleSave} className="space-y-6">
-            <div className="grid grid-cols-2 gap-8">
-              {/* Full Name */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              {/* Full Name (maps to 'name' on the backend) */}
               <div>
                 <label className={`block text-lg ${isDarkMode ? 'text-white' : 'text-granite-dark'} mb-2`}>
                   Full Name
                 </label>
                 <input
                   type="text"
-                  name="fullName"
-                  value={editedUserInfo.fullName}
+                  name="name"
+                  value={editedUserInfo.name}
                   onChange={handleInputChange}
                   disabled={!isEditing}
                   className={`w-full p-4 border rounded-lg ${
@@ -168,23 +221,57 @@ function Account() {
                   } ${isEditing ? 'focus:outline-none focus:ring-2 focus:ring-blue-500' : 'cursor-not-allowed'}`}
                 />
               </div>
-              {/* Password */}
-              <div>
-                <label className={`block text-lg ${isDarkMode ? 'text-white' : 'text-granite-dark'} mb-2`}>
-                  Password
-                </label>
-                <input
-                  type="password"
-                  name="password"
-                  value={editedUserInfo.password}
-                  onChange={handleInputChange}
-                  disabled={!isEditing}
-                  className={`w-full p-4 border rounded-lg ${
-                    isDarkMode ? 'bg-gray-700 text-white border-gray-600' : 'bg-gray-50 text-black border-gray-300'
-                  } ${isEditing ? 'focus:outline-none focus:ring-2 focus:ring-blue-500' : 'cursor-not-allowed'}`}
-                />
-              </div>
             </div>
+
+            {/* Checkbox to change password */}
+            {isEditing && (
+              <div className="mb-4">
+                <label className="flex items-center space-x-2">
+                  <input
+                    type="checkbox"
+                    checked={changePassword}
+                    onChange={(e) => setChangePassword(e.target.checked)}
+                  />
+                  <span>Change Password</span>
+                </label>
+              </div>
+            )}
+
+            {/* If user wants to change password */}
+            {isEditing && changePassword && (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                {/* Current Password */}
+                <div>
+                  <label className={`block text-lg ${isDarkMode ? 'text-white' : 'text-granite-dark'} mb-2`}>
+                    Current Password
+                  </label>
+                  <input
+                    type="password"
+                    name="currentPassword"
+                    value={currentPassword}
+                    onChange={handleCurrentPasswordChange}
+                    className={`w-full p-4 border rounded-lg ${
+                      isDarkMode ? 'bg-gray-700 text-white border-gray-600' : 'bg-gray-50 text-black border-gray-300'
+                    } focus:outline-none focus:ring-2 focus:ring-blue-500`}
+                  />
+                </div>
+                {/* New Password */}
+                <div>
+                  <label className={`block text-lg ${isDarkMode ? 'text-white' : 'text-granite-dark'} mb-2`}>
+                    New Password
+                  </label>
+                  <input
+                    type="password"
+                    name="newPassword"
+                    value={newPassword}
+                    onChange={handleNewPasswordChange}
+                    className={`w-full p-4 border rounded-lg ${
+                      isDarkMode ? 'bg-gray-700 text-white border-gray-600' : 'bg-gray-50 text-black border-gray-300'
+                    } focus:outline-none focus:ring-2 focus:ring-blue-500`}
+                  />
+                </div>
+              </div>
+            )}
 
             {isEditing && (
               <div className="flex space-x-4">

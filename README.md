@@ -130,7 +130,7 @@ watchtracker/
 │   ├── controllers/       # Controller functions for API routes
 │   ├── models/            # Database models (Prisma ORM)
 │   ├── routes/            # API routes
-|   |── middleware/        # Auth middleware
+|   |── middleware/        # middleware functions
 │   ├── db/                # Prisma schema
 │   └── index.js          # Express server setup
 │
