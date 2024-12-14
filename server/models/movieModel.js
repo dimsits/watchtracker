@@ -52,7 +52,6 @@ const mapOmdbToPrisma = (movieData) => ({
   awards: movieData.Awards || 'N/A',
   poster_url: movieData.Poster || '',
   imdb_rating: parseFloat(movieData.imdbRating) || 0.0,
-  like_count: 0, // Default value for new movies
 });
 
 // Create a new movie in the database using IMDb ID

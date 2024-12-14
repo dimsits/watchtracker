@@ -138,12 +138,6 @@ async function getUserWatchlist(user_id) {
   return formattedWatchlist;
 }
 
-// Since we no longer have a "like" feature, the functions below should be removed or modified.
-// For now, we'll remove them. If you need to handle them differently, adjust accordingly.
-
-// Remove likeMovie, unlikeMovie, as we no longer have that feature.
-// Remove references to like_count everywhere.
-
 // Delete a movie from the user's watchlist
 async function deleteFromWatchlist(user_id, movie_id) {
   // Check if the watchlist entry exists

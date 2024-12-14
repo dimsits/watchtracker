@@ -97,9 +97,30 @@ async function deleteReview(user_id, movie_id) {
   return { message: 'Review deleted' };
 }
 
+async function getAverageRatingForMovie(movie_id) {
+    if (!movie_id) {
+      throw new Error('movie_id is required');
+    }
+  
+    try {
+      const averageRating = await prisma.review.aggregate({
+        where: { movie_id },
+        _avg: {
+          rating: true,
+        },
+      });
+  
+      return averageRating._avg.rating || 0; // Default to 0 if no ratings
+    } catch (error) {
+      console.error('Error fetching average rating:', error);
+      throw error;
+    }
+  }
+
 module.exports = {
   addReview,
   updateReview,
   getReviewsForMovie,
   deleteReview,
+  getAverageRatingForMovie,
 };
