@@ -149,15 +149,6 @@ function Account() {
                     Edit Profile
                   </button>
                   <button
-                    onClick={() => {
-                      setShowAppearanceModal(true);
-                      setShowMenu(false);
-                    }}
-                    className={`block w-full text-left px-4 py-2 ${isDarkMode ? 'text-white hover:bg-gray-600' : 'text-granite-dark hover:bg-granite-light'} transition`}
-                  >
-                    Appearance
-                  </button>
-                  <button
                     onClick={handleLogout}
                     className={`block w-full text-left px-4 py-2 ${
                       isDarkMode ? 'text-white hover:bg-gray-600' : 'text-granite-dark hover:bg-granite-light'
@@ -275,40 +266,6 @@ function Account() {
             )}
           </form>
         </div>
-
-        {/* Appearance Modal */}
-        {showAppearanceModal && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className={`${isDarkMode ? 'bg-gray-800' : 'bg-white'} p-6 rounded-lg shadow-lg`}>
-              <h2 className={`${isDarkMode ? 'text-white' : 'text-black'} text-lg font-bold mb-4`}>
-                Appearance Settings
-              </h2>
-              <div className="flex items-center space-x-4">
-                <button
-                  onClick={toggleTheme}
-                  className={`w-12 h-6 flex items-center rounded-full p-1 cursor-pointer transition-all duration-300 ${
-                    isDarkMode ? 'bg-gray-700' : 'bg-gray-300'
-                  }`}
-                >
-                  <div
-                    className={`w-5 h-5 rounded-full shadow-md transform transition-transform duration-300 ${
-                      isDarkMode ? 'translate-x-6 bg-yellow-400' : 'translate-x-0 bg-gray-800'
-                    }`}
-                  ></div>
-                </button>
-                <span className={`${isDarkMode ? 'text-white' : 'text-black'} text-sm font-nunito`}>
-                  {isDarkMode ? 'Dark Mode' : 'Light Mode'}
-                </span>
-              </div>
-              <button
-                onClick={() => setShowAppearanceModal(false)}
-                className="mt-6 bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 transition"
-              >
-                Close
-              </button>
-            </div>
-          </div>
-        )}
       </main>
     </div>
   );

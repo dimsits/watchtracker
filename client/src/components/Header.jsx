@@ -4,7 +4,7 @@ import { useTheme } from "../contexts/ThemeContext";
 import { useHeaderTransparency } from "../hooks/useHeaderTransparency";
 
 function Header() {
-  const { isDarkMode } = useTheme();
+  const { isDarkMode, toggleTheme } = useTheme(); // Use toggleTheme to switch themes
   const location = useLocation();
   const isTransparent = useHeaderTransparency();
 
@@ -34,7 +34,12 @@ function Header() {
 
           {/* Navigation Links */}
           <nav className="flex items-center space-x-6">
-            {[{ name: "Your Watchlist", path: "/dashboard" }, { name: "Seen Movies", path: "/seen" }, { name: "Find Movies", path: "/movies" }, { name: "Account", path: "/account" }].map((link, index) => (
+            {[
+              { name: "Your Watchlist", path: "/dashboard" },
+              { name: "Seen Movies", path: "/seen" },
+              { name: "Find Movies", path: "/movies" },
+              { name: "Account", path: "/account" },
+            ].map((link, index) => (
               <Link
                 key={index}
                 to={link.path}
@@ -51,8 +56,22 @@ function Header() {
           </nav>
         </div>
 
-        {/* Right Section (if needed for future functionality) */}
-        <div></div>
+        {/* Right Section: Dark/Light Mode Toggle */}
+        <div>
+          <button
+            onClick={toggleTheme} // Toggle dark/light mode
+            className="text-2xl focus:outline-none transform transition-transform duration-500 hover:scale-125"
+            title={`Switch to ${isDarkMode ? "Light Mode" : "Dark Mode"}`}
+          >
+            <span
+              className={`block transition-transform duration-500 ${
+                isDarkMode ? "rotate-90 opacity-100" : "rotate-0 opacity-100"
+              }`}
+            >
+              {isDarkMode ? "🌙" : "☀️"} {/* Moon for dark mode, sun for light mode */}
+            </span>
+          </button>
+        </div>
       </div>
     </header>
   );
