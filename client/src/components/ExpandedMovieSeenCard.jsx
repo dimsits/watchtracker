@@ -5,33 +5,39 @@ function ExpandedMovieSeenCard({ movie, onCollapse, onAddReview, onUpdateReview 
   const { isDarkMode } = useTheme();
   const [rating, setRating] = useState(movie.userRating || 0); // Initialize with userRating if available
   const [hoverRating, setHoverRating] = useState(0);
+  const [isVisible, setIsVisible] = useState(false);
 
-  // Disable background scrolling when the card is open
+  // Trigger animation on mount
   useEffect(() => {
+    setTimeout(() => setIsVisible(true), 10); // Slight delay for smooth animation
     document.body.classList.add("overflow-hidden");
+
     return () => {
       document.body.classList.remove("overflow-hidden");
     };
   }, []);
 
+  const handleClose = () => {
+    setIsVisible(false); // Trigger close animation
+    setTimeout(() => onCollapse(), 300); // Delay collapse until animation completes
+  };
+
   const handleRatingClick = (value) => {
+    setRating(value);
     if (rating === 0) {
-      // Add a new review
       onAddReview({
         movieId: movie.movie_id,
         rating: value,
       });
       alert("Rating submitted successfully!");
-    } else if (rating !== value) {
-      // Update an existing review
+    } else {
       onUpdateReview({
         movieId: movie.movie_id,
         rating: value,
       });
-      alert("Rating updated successfully!");
+      // alert("Rating updated successfully!");
     }
-    setRating(value); // Update the local state
-    onCollapse(); // Close the expanded card
+    handleClose();
   };
 
   const handleMouseEnter = (value) => {
@@ -44,18 +50,20 @@ function ExpandedMovieSeenCard({ movie, onCollapse, onAddReview, onUpdateReview 
 
   return (
     <div
-      className={`fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 ${
-        isDarkMode ? "text-white" : "text-black"
-      }`}
+      className={`fixed inset-0 z-50 flex items-center justify-center bg-black/70 ${
+        isVisible ? "opacity-100" : "opacity-0"
+      } transition-opacity duration-300`}
     >
       <div
-        className={`relative w-[90%] max-w-4xl rounded-lg shadow-lg overflow-hidden ${
-          isDarkMode ? "bg-gray-800" : "bg-white"
+        className={`relative w-[90%] max-w-4xl rounded-lg shadow-lg overflow-hidden transform ${
+          isVisible ? "scale-100" : "scale-90"
+        } transition-transform duration-300 ${
+          isDarkMode ? "bg-gray-800 text-white" : "bg-white text-black"
         }`}
       >
         {/* Close Button */}
         <button
-          onClick={onCollapse}
+          onClick={handleClose}
           className={`absolute top-3 right-3 text-gray-400 hover:text-gray-600 ${
             isDarkMode ? "text-gray-300 hover:text-white" : ""
           }`}
@@ -84,14 +92,14 @@ function ExpandedMovieSeenCard({ movie, onCollapse, onAddReview, onUpdateReview 
               {movie.title} ({movie.year || "N/A"})
             </h2>
 
-            {/* Rating and Stars */}
+            {/* IMDb Rating and Stars */}
             <div className="flex items-center mb-4">
               <div className="flex items-center">
                 {[...Array(5)].map((_, index) => (
                   <span
                     key={index}
                     className={`text-xl ${
-                      index < Math.round(movie.imdb_rating / 2)
+                      movie.imdb_rating / 2 > index
                         ? isDarkMode
                           ? "text-yellow-400"
                           : "text-yellow-600"
@@ -120,8 +128,7 @@ function ExpandedMovieSeenCard({ movie, onCollapse, onAddReview, onUpdateReview 
                   isDarkMode ? "text-gray-400" : "text-gray-600"
                 }`}
               >
-                Type: Movie | Genre: {movie.genre || "N/A"} | Language:{" "}
-                {movie.language || "N/A"}
+                Genre: {movie.genre || "N/A"} | Language: {movie.language || "N/A"}
               </p>
               <p
                 className={`mt-1 ${
@@ -134,26 +141,20 @@ function ExpandedMovieSeenCard({ movie, onCollapse, onAddReview, onUpdateReview 
 
             {/* Plot */}
             <div className="mb-6">
-              <h3 className={`font-bold mb-1 ${isDarkMode ? "text-white" : "text-black"}`}>
+              <h3
+                className={`font-bold mb-1 ${
+                  isDarkMode ? "text-white" : "text-black"
+                }`}
+              >
                 Plot:
               </h3>
-              <div
-                className="text-sm overflow-y-auto max-h-[200px] pr-2"
-                style={{
-                  scrollbarWidth: "thin",
-                  scrollbarColor: isDarkMode
-                    ? "rgba(255,255,255,0.7) rgba(0,0,0,0.3)"
-                    : "rgba(0,0,0,0.7) rgba(255,255,255,0.3)",
-                }}
+              <p
+                className={`${
+                  isDarkMode ? "text-gray-300" : "text-gray-600"
+                }`}
               >
-                <p
-                  className={`${
-                    isDarkMode ? "text-gray-300" : "text-gray-600"
-                  }`}
-                >
-                  {movie.plot || "Description not available."}
-                </p>
-              </div>
+                {movie.plot || "Description not available."}
+              </p>
             </div>
 
             {/* Interactive Rating */}

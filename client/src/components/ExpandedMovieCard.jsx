@@ -1,31 +1,41 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useTheme } from "../contexts/ThemeContext";
 
 function ExpandedMovieCard({ movie, onMarkSeen, onDelete, onCollapse }) {
   const { isDarkMode } = useTheme();
+  const [isVisible, setIsVisible] = useState(false);
 
-  // Disable background scrolling when the card is open
+  // Enable animations on mount and disable body scrolling
   useEffect(() => {
+    setTimeout(() => setIsVisible(true), 10); // Slight delay for smooth animation
     document.body.classList.add("overflow-hidden");
+
     return () => {
       document.body.classList.remove("overflow-hidden");
     };
   }, []);
 
+  const handleClose = () => {
+    setIsVisible(false); // Trigger close animation
+    setTimeout(() => onCollapse(), 300); // Delay collapse until animation completes
+  };
+
   return (
     <div
       className={`fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 ${
-        isDarkMode ? "text-white" : "text-black"
-      }`}
+        isVisible ? "opacity-100" : "opacity-0"
+      } transition-opacity duration-300`}
     >
       <div
-        className={`relative w-[90%] max-w-4xl rounded-lg shadow-lg overflow-hidden ${
+        className={`relative w-[90%] max-w-4xl rounded-lg shadow-lg overflow-hidden transform ${
+          isVisible ? "scale-100" : "scale-90"
+        } transition-transform duration-300 ${
           isDarkMode ? "bg-gray-800" : "bg-white"
         }`}
       >
         {/* Close Button */}
         <button
-          onClick={onCollapse}
+          onClick={handleClose}
           className={`absolute top-3 right-3 text-gray-400 hover:text-gray-600 ${
             isDarkMode ? "text-gray-300 hover:text-white" : ""
           }`}

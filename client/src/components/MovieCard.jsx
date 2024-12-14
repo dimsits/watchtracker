@@ -68,19 +68,29 @@ function MovieCard({ movie, onMarkSeen, onDelete, onAddReview, onUpdateReview })
           {isHovered && (
             <>
               <div className="absolute bottom-2 left-2 flex gap-2 transition-opacity duration-300">
-                {/* Expand Button */}
-                <button
-                  onClick={handleExpand}
-                  className={`w-8 h-8 flex items-center justify-center rounded-full transition-transform transform hover:scale-110 ${
-                    isDarkMode
-                      ? "bg-gray-700 hover:bg-gray-500 text-white"
-                      : "bg-gray-200 hover:bg-gray-400 text-black"
-                  } shadow-md`}
-                  title="Expand"
-                >
-                  ⓘ
-                </button>
-              </div>
+            <button
+              onClick={handleExpand}
+              className={`w-8 h-8 flex items-center justify-center rounded-full transition ${
+                isDarkMode
+                  ? "bg-gray-800 bg-opacity-50 text-white"
+                  : "bg-gray-300 bg-opacity-50 text-black"
+              } hover:scale-110 shadow-md`}
+              title="Expand"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-5 w-5"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+              >
+                <path
+                  fillRule="evenodd"
+                  d="M10 12a.75.75 0 01-.53-.22l-4-4a.75.75 0 111.06-1.06L10 10.19l3.47-3.47a.75.75 0 111.06 1.06l-4 4a.75.75 0 01-.53.22z"
+                  clipRule="evenodd"
+                />
+              </svg>
+            </button>
+          </div>
 
               {/* Triple Dot Menu */}
               <div className="absolute bottom-2 right-2 transition-opacity duration-300">

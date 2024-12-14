@@ -1,31 +1,41 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useTheme } from "../contexts/ThemeContext";
 
 function ExpandedMovieAddCard({ movie, onAddToWatchlist, onCollapse }) {
   const { isDarkMode } = useTheme();
+  const [isVisible, setIsVisible] = useState(false);
 
-  // Disable background scrolling when the card is open
+  // Trigger animation and disable background scrolling when mounted
   useEffect(() => {
+    setTimeout(() => setIsVisible(true), 10); // Slight delay for animation
     document.body.classList.add("overflow-hidden");
+
     return () => {
       document.body.classList.remove("overflow-hidden");
     };
   }, []);
 
+  const handleClose = () => {
+    setIsVisible(false); // Trigger close animation
+    setTimeout(() => onCollapse(), 300); // Wait for animation before unmounting
+  };
+
   return (
     <div
       className={`fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 ${
-        isDarkMode ? "text-white" : "text-black"
-      }`}
+        isVisible ? "opacity-100" : "opacity-0"
+      } transition-opacity duration-300`}
     >
       <div
-        className={`relative w-full max-w-5xl rounded-lg shadow-lg overflow-hidden ${
-          isDarkMode ? "bg-gray-800" : "bg-white"
+        className={`relative w-[90%] max-w-4xl rounded-lg shadow-lg overflow-hidden transform ${
+          isVisible ? "scale-100" : "scale-90"
+        } transition-transform duration-300 ${
+          isDarkMode ? "bg-gray-800 text-white" : "bg-white text-black"
         }`}
       >
         {/* Close Button */}
         <button
-          onClick={onCollapse}
+          onClick={handleClose}
           className={`absolute top-3 right-3 text-gray-400 hover:text-gray-600 ${
             isDarkMode ? "text-gray-300 hover:text-white" : ""
           }`}
@@ -33,71 +43,85 @@ function ExpandedMovieAddCard({ movie, onAddToWatchlist, onCollapse }) {
           ✕
         </button>
 
-        <div className="flex">
+        <div className="flex flex-col md:flex-row">
           {/* Poster */}
-          <div className="w-[40%] p-4">
+          <div className="w-full md:w-[40%] p-4 flex-shrink-0">
             <img
               src={movie.poster_url}
               alt={movie.title}
-              className="w-full h-auto max-h-[600px] object-contain rounded"
+              className="w-full h-auto max-h-[400px] object-cover rounded-lg"
             />
           </div>
 
           {/* Movie Details */}
-          <div className="w-[60%] p-6 flex flex-col">
-            {/* Title and Year */}
-            <div className="mb-3">
-              <h2
-                className={`text-3xl font-bold ${
-                  isDarkMode ? "text-white" : "text-gray-900"
+          <div className="w-full md:w-[60%] p-6 flex flex-col">
+            {/* Title */}
+            <h2
+              className={`text-2xl md:text-3xl font-bold mb-2 ${
+                isDarkMode ? "text-white" : "text-gray-900"
+              }`}
+            >
+              {movie.title} ({movie.year || "N/A"})
+            </h2>
+
+            {/* IMDb Rating */}
+            <div className="flex items-center mb-4">
+              <div className="flex items-center">
+                {[...Array(5)].map((_, index) => (
+                  <span
+                    key={index}
+                    className={`text-xl ${
+                      movie.imdb_rating / 2 > index
+                        ? isDarkMode
+                          ? "text-yellow-400"
+                          : "text-yellow-600"
+                        : isDarkMode
+                        ? "text-gray-500"
+                        : "text-gray-400"
+                    }`}
+                  >
+                    ★
+                  </span>
+                ))}
+              </div>
+              <span
+                className={`ml-3 font-medium ${
+                  isDarkMode ? "text-gray-300" : "text-gray-600"
                 }`}
               >
-                {movie.title} ({movie.year || "N/A"})
-              </h2>
+                IMDb: {movie.imdb_rating || "N/A"}
+              </span>
             </div>
 
-            {/* Stars and Ratings */}
-            <div className="flex items-center mb-2">
-              <span
-                className={`text-lg font-medium ${
-                  isDarkMode ? "text-yellow-400" : "text-yellow-600"
-                }`}
-              >
-                ★ IMDb: {movie.imdb_rating || "N/A"}
-              </span>
-              <span
-                className={`ml-4 text-lg font-medium ${
-                  isDarkMode ? "text-gray-400" : "text-gray-500"
-                }`}
-              >
-                Average Rating: {movie.average_rating !== undefined ? movie.average_rating : "N/A"} / 5
-
-              </span>
-            </div>
-
-            {/* Genre, Country, Language */}
-            <div className="mb-4">
+            {/* Metadata */}
+            <div className="mb-4 text-sm italic">
               <p
-                className={`text-sm italic ${
-                  isDarkMode ? "text-gray-400" : "text-gray-500"
+                className={`${
+                  isDarkMode ? "text-gray-400" : "text-gray-600"
                 }`}
               >
-                {movie.genre || "N/A"}, {movie.country || "N/A"},{" "}
-                {movie.language || "N/A"}
+                Genre: {movie.genre || "N/A"} | Language: {movie.language || "N/A"}
+              </p>
+              <p
+                className={`mt-1 ${
+                  isDarkMode ? "text-gray-400" : "text-gray-600"
+                }`}
+              >
+                Country: {movie.country || "N/A"}
               </p>
             </div>
 
             {/* Plot */}
             <div className="mb-6">
-              <p
-                className={`text-sm font-semibold mb-2 ${
-                  isDarkMode ? "text-gray-400" : "text-gray-500"
+              <h3
+                className={`font-bold mb-1 ${
+                  isDarkMode ? "text-white" : "text-black"
                 }`}
               >
                 Plot:
-              </p>
+              </h3>
               <div
-                className="text-sm overflow-y-auto max-h-[250px] pr-2"
+                className="text-sm overflow-y-auto max-h-[200px] pr-2"
                 style={{
                   scrollbarWidth: "thin",
                   scrollbarColor: isDarkMode
@@ -110,14 +134,13 @@ function ExpandedMovieAddCard({ movie, onAddToWatchlist, onCollapse }) {
                     isDarkMode ? "text-gray-300" : "text-gray-600"
                   }`}
                 >
-                  {movie.plot || "Description not available"}
+                  {movie.plot || "Description not available."}
                 </p>
               </div>
             </div>
 
-            {/* Buttons */}
+            {/* Add to Watchlist Button */}
             <div className="flex space-x-4 mt-4">
-              {/* Add to Watchlist Button */}
               <button
                 onClick={() => onAddToWatchlist(movie.movie_id)}
                 className={`px-6 py-2 rounded-md font-semibold text-sm transition ${
