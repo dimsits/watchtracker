@@ -56,21 +56,21 @@ function ExpandedMovieCard({ movie, onMarkSeen, onDelete, onCollapse }) {
               </h2>
             </div>
 
-            {/* Stars and Likes */}
+            {/* Stars and Average Rating */}
             <div className="flex items-center mb-2">
               <span
                 className={`text-lg font-medium ${
                   isDarkMode ? "text-yellow-400" : "text-yellow-600"
                 }`}
               >
-                ★ {movie.imdb_rating || "N/A"}
+                ★ IMDb: {movie.imdb_rating || "N/A"}
               </span>
               <span
                 className={`ml-4 text-lg font-medium ${
                   isDarkMode ? "text-gray-400" : "text-gray-500"
                 }`}
               >
-                Likes: {movie.like_count || "0"}
+                Average Rating: {movie.average_rating || "N/A"} / 5
               </span>
             </div>
 
