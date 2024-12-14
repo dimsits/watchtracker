@@ -34,8 +34,10 @@ function Dashboard() {
         if (response.ok) {
           const data = await response.json();
 
+          const unwatchedMovies = data.filter((movie) => !movie.watched);
+
           // Sort movies by createdAt descending so newest appears first
-          const sortedData = data.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+          const sortedData = unwatchedMovies.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
           setMovies(sortedData);
         } else {
           console.error("Failed to fetch watchlist");

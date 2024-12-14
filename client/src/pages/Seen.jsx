@@ -1,21 +1,133 @@
-import React from 'react';
-import Header from '../components/Header';
-import { useTheme } from '../contexts/ThemeContext';
+import React, { useState, useEffect } from "react";
+import MovieCard from "../components/MovieCard";
+import Header from "../components/Header";
+import { useTheme } from "../contexts/ThemeContext";
+import useAuthStore from "../store/authStore"; // Import your auth store
 
 function Seen() {
   const { isDarkMode } = useTheme();
+  const [searchQuery, setSearchQuery] = useState("");
+  const [isSearching, setIsSearching] = useState(false);
+  const [expandedMovieId, setExpandedMovieId] = useState(null);
+  const [movies, setMovies] = useState([]);
+
+  // Access token and auth status from the store
+  const { token, isAuthenticated } = useAuthStore();
+
+  useEffect(() => {
+    // Only fetch the watchlist if the user is authenticated
+    if (!isAuthenticated) {
+      return;
+    }
+
+    const fetchSeenMovies = async () => {
+      try {
+        const response = await fetch("http://localhost:5000/api/watchlist/userWatchlist", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`, // Include the token in headers
+          },
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+
+          // Filter movies to include only those with watched = true
+          const seenMovies = data.filter((movie) => movie.watched);
+
+          // Sort movies by createdAt descending so newest appears first
+          const sortedData = seenMovies.sort(
+            (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+          );
+
+          setMovies(sortedData);
+        } else {
+          console.error("Failed to fetch watchlist");
+        }
+      } catch (error) {
+        console.error("Error fetching watchlist:", error);
+      }
+    };
+
+    fetchSeenMovies();
+  }, [isAuthenticated, token]);
+
+  const handleExpand = (id) => {
+    setExpandedMovieId(id === expandedMovieId ? null : id);
+  };
+
+  const filteredMovies = movies.filter((item) =>
+    item.movie.title.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  useEffect(() => {
+    setIsSearching(searchQuery !== "");
+  }, [searchQuery]);
+
+  const expandedMovie = movies.find((item) => item.movie_id === expandedMovieId);
 
   return (
-    <div className={`min-h-screen ${isDarkMode ? 'bg-gray-900' : 'bg-gray-100'}`}>
+    <div className={`min-h-screen ${isDarkMode ? "bg-gray-900" : "bg-gray-100"}`}>
       <Header />
+
       <main className="pt-20 px-4 md:px-8">
-        <p className={`text-center ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-          Your seen movies will appear here.
-        </p>
+        {/* Search Bar */}
+        <div className="mb-8">
+          <div className="relative max-w-md mx-auto">
+            <input
+              type="text"
+              placeholder="Search movies..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className={`w-full px-4 py-2 rounded-md border ${
+                isDarkMode
+                  ? "bg-gray-700 text-white border-gray-600"
+                  : "bg-white border-gray-300"
+              } focus:outline-none focus:border-blue-500`}
+            />
+            <span className="absolute right-3 top-2.5 text-gray-400">🔍</span>
+          </div>
+        </div>
+
+        {/* Seen Movies Section */}
+        {movies.length > 0 && (
+          <section>
+            <h2
+              className={`text-2xl font-bold mb-4 ${
+                isDarkMode ? "text-white" : "text-gray-800"
+              }`}
+            >
+              Seen Movies
+            </h2>
+            <div className="flex flex-wrap justify-start gap-4 px-4">
+              {filteredMovies.map((item) => (
+                <MovieCard
+                  key={item.movie_id}
+                  movie={{
+                    ...item.movie,
+                    watched: item.watched,
+                    notes: item.notes,
+                  }}
+                  onExpand={handleExpand}
+                  isExpanded={item.movie_id === expandedMovieId}
+                />
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* No Seen Movies */}
+        {movies.length === 0 && !isSearching && (
+          <p
+            className={`text-center ${isDarkMode ? "text-gray-400" : "text-gray-600"}`}
+          >
+            You have no seen movies.
+          </p>
+        )}
       </main>
     </div>
   );
 }
 
 export default Seen;
-

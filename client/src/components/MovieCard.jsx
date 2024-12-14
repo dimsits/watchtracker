@@ -1,29 +1,30 @@
 import { useState, useRef, useEffect } from "react";
 import { useTheme } from "../contexts/ThemeContext";
-import ExpandedMovieCard from "./ExpandedMovieCard"; // Import ExpandedMovieCard
+import ExpandedMovieCard from "./ExpandedMovieCard";
+import ExpandedMovieSeenCard from "./ExpandedMovieSeenCard";
 
-function MovieCard({ movie, onMarkSeen, onDelete }) {
+function MovieCard({ movie, onMarkSeen, onDelete, onAddReview }) {
   const { isDarkMode } = useTheme();
   const [showMenu, setShowMenu] = useState(false);
-  const [isExpanded, setIsExpanded] = useState(false); // Track if the card is expanded
+  const [isExpanded, setIsExpanded] = useState(false);
   const dropdownRef = useRef(null);
 
   const handleSeen = () => {
-    onMarkSeen(movie.movie_id); // Use the correct movie ID
+    onMarkSeen(movie.movie_id);
     setShowMenu(false);
   };
 
   const handleDelete = () => {
-    onDelete(movie.movie_id); // Use the correct movie ID
+    onDelete(movie.movie_id);
     setShowMenu(false);
   };
 
   const handleExpand = () => {
-    setIsExpanded(true); // Open expanded card
+    setIsExpanded(true);
   };
 
   const handleCollapse = () => {
-    setIsExpanded(false); // Close expanded card
+    setIsExpanded(false);
   };
 
   const handleOutsideClick = (event) => {
@@ -71,7 +72,7 @@ function MovieCard({ movie, onMarkSeen, onDelete }) {
             } hover:scale-110 shadow-md`}
             title="Options"
           >
-            &#8942; {/* Vertical three dots */}
+            &#8942;
           </button>
 
           {showMenu && (
@@ -107,9 +108,7 @@ function MovieCard({ movie, onMarkSeen, onDelete }) {
         </div>
 
         {/* Expand Button */}
-        <div
-          className="absolute bottom-4 left-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-        >
+        <div className="absolute bottom-4 left-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
           <button
             onClick={handleExpand}
             className={`w-8 h-8 flex items-center justify-center rounded-full transition ${
@@ -137,12 +136,25 @@ function MovieCard({ movie, onMarkSeen, onDelete }) {
 
       {/* Expanded Movie Card */}
       {isExpanded && (
-        <ExpandedMovieCard
-          movie={movie} // Pass correct movie data
-          onCollapse={handleCollapse} // Collapse functionality
-          onMarkSeen={onMarkSeen} // Forward marking as seen
-          onDelete={onDelete} // Forward delete functionality
-        />
+        <>
+          {movie.watched ? (
+            <ExpandedMovieSeenCard
+              movie={movie}
+              onCollapse={handleCollapse}
+              onAddReview={(reviewData) => {
+                onAddReview(reviewData);
+                handleCollapse();
+              }}
+            />
+          ) : (
+            <ExpandedMovieCard
+              movie={movie}
+              onCollapse={handleCollapse}
+              onMarkSeen={onMarkSeen}
+              onDelete={onDelete}
+            />
+          )}
+        </>
       )}
     </>
   );

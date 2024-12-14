@@ -1,8 +1,10 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useTheme } from "../contexts/ThemeContext";
 
-function ExpandedMovieCard({ movie, onMarkSeen, onDelete, onCollapse }) {
+function ExpandedMovieSeenCard({ movie, onCollapse, onAddReview }) {
   const { isDarkMode } = useTheme();
+  const [rating, setRating] = useState(0);
+  const [hoverRating, setHoverRating] = useState(0);
 
   // Disable background scrolling when the card is open
   useEffect(() => {
@@ -11,6 +13,24 @@ function ExpandedMovieCard({ movie, onMarkSeen, onDelete, onCollapse }) {
       document.body.classList.remove("overflow-hidden");
     };
   }, []);
+
+  const handleRatingClick = (value) => {
+    setRating(value);
+    onAddReview({
+      movieId: movie.movie_id,
+      rating,
+    });
+    alert("Rating submitted successfully!");
+    onCollapse();
+  };
+
+  const handleMouseEnter = (value) => {
+    setHoverRating(value);
+  };
+
+  const handleMouseLeave = () => {
+    setHoverRating(0);
+  };
 
   return (
     <div
@@ -113,28 +133,32 @@ function ExpandedMovieCard({ movie, onMarkSeen, onDelete, onCollapse }) {
               </div>
             </div>
 
-            {/* Buttons */}
-            <div className="flex space-x-4 mt-4">
-              <button
-                onClick={() => onMarkSeen(movie.movie_id)}
-                className={`px-6 py-2 rounded-md font-semibold text-sm transition ${
-                  isDarkMode
-                    ? "bg-darkGranite-button hover:bg-darkGranite-hover text-granite-softWhite"
-                    : "bg-granite-medium hover:bg-granite-light text-granite-softWhite"
-                }`}
-              >
-                Add to Seen
-              </button>
-              <button
-                onClick={() => onDelete(movie.movie_id)}
-                className={`px-6 py-2 rounded-md font-semibold text-sm transition ${
-                  isDarkMode
-                    ? "bg-gray-700 hover:bg-gray-600 text-granite-softWhite"
-                    : "bg-gray-300 hover:bg-gray-400 text-granite-softWhite"
-                }`}
-              >
-                Remove
-              </button>
+            {/* Interactive Rating */}
+            <div className="mb-4">
+              <p className={`text-sm font-semibold ${isDarkMode ? "text-white" : "text-gray-900"}`}>
+                Rate this movie:
+              </p>
+              <div className="flex space-x-1">
+                {[1, 2, 3, 4, 5].map((star) => (
+                  <button
+                    key={star}
+                    onClick={() => handleRatingClick(star)}
+                    onMouseEnter={() => handleMouseEnter(star)}
+                    onMouseLeave={handleMouseLeave}
+                    className={`text-2xl transition ${
+                      star <= (hoverRating || rating)
+                        ? isDarkMode
+                          ? "text-yellow-400"
+                          : "text-yellow-600"
+                        : isDarkMode
+                        ? "text-gray-500"
+                        : "text-gray-300"
+                    }`}
+                  >
+                    ★
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
         </div>
@@ -143,4 +167,4 @@ function ExpandedMovieCard({ movie, onMarkSeen, onDelete, onCollapse }) {
   );
 }
 
-export default ExpandedMovieCard;
+export default ExpandedMovieSeenCard;

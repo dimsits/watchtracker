@@ -70,7 +70,8 @@ function ExpandedMovieAddCard({ movie, onAddToWatchlist, onCollapse }) {
                   isDarkMode ? "text-gray-400" : "text-gray-500"
                 }`}
               >
-                Average Rating: {movie.average_rating || "N/A"} / 5
+                Average Rating: {movie.average_rating !== undefined ? movie.average_rating : "N/A"} / 5
+
               </span>
             </div>
 
