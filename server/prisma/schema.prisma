@@ -45,7 +45,6 @@ model Watchlist {
   user_id       String
   movie_id      String
   watched       Boolean    @default(false)
-  notes         String?
   user          User       @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
   movie         Movies     @relation(fields: [movie_id], references: [movie_id], onDelete: Cascade)
   createdAt     DateTime   @default(now())

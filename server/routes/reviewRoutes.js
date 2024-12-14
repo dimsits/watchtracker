@@ -6,6 +6,7 @@ const {
   updateReview,
   getReviewsForMovie,
   deleteReview,
+  getUserReview
 } = require('../controllers/reviewController');
 
 // All review routes require authentication
@@ -22,5 +23,7 @@ router.get('/movie/:movie_id', getReviewsForMovie);
 
 // Delete a review
 router.delete('/delete', deleteReview);
+
+router.get('/user-review/:movie_id', getUserReview);
 
 module.exports = router;

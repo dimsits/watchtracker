@@ -49,7 +49,7 @@ function ExpandedMovieSeenCard({ movie, onCollapse, onAddReview, onUpdateReview 
       }`}
     >
       <div
-        className={`relative w-full max-w-5xl rounded-lg shadow-lg overflow-hidden ${
+        className={`relative w-[90%] max-w-4xl rounded-lg shadow-lg overflow-hidden ${
           isDarkMode ? "bg-gray-800" : "bg-white"
         }`}
       >
@@ -63,69 +63,82 @@ function ExpandedMovieSeenCard({ movie, onCollapse, onAddReview, onUpdateReview 
           ✕
         </button>
 
-        <div className="flex">
+        <div className="flex flex-col md:flex-row">
           {/* Poster */}
-          <div className="w-[40%] p-4">
+          <div className="w-full md:w-[40%] p-4 flex-shrink-0">
             <img
               src={movie.poster_url}
               alt={movie.title}
-              className="w-full h-auto max-h-[600px] object-contain rounded"
+              className="w-full h-auto max-h-[400px] object-cover rounded-lg"
             />
           </div>
 
           {/* Movie Details */}
-          <div className="w-[60%] p-6 flex flex-col">
-            {/* Title and Year */}
-            <div className="mb-3">
-              <h2
-                className={`text-3xl font-bold ${
-                  isDarkMode ? "text-white" : "text-gray-900"
+          <div className="w-full md:w-[60%] p-6 flex flex-col">
+            {/* Title */}
+            <h2
+              className={`text-2xl md:text-3xl font-bold mb-2 ${
+                isDarkMode ? "text-white" : "text-gray-900"
+              }`}
+            >
+              {movie.title} ({movie.year || "N/A"})
+            </h2>
+
+            {/* Rating and Stars */}
+            <div className="flex items-center mb-4">
+              <div className="flex items-center">
+                {[...Array(5)].map((_, index) => (
+                  <span
+                    key={index}
+                    className={`text-xl ${
+                      index < Math.round(movie.imdb_rating / 2)
+                        ? isDarkMode
+                          ? "text-yellow-400"
+                          : "text-yellow-600"
+                        : isDarkMode
+                        ? "text-gray-500"
+                        : "text-gray-400"
+                    }`}
+                  >
+                    ★
+                  </span>
+                ))}
+              </div>
+              <span
+                className={`ml-3 font-medium ${
+                  isDarkMode ? "text-gray-300" : "text-gray-600"
                 }`}
               >
-                {movie.title} ({movie.year || "N/A"})
-              </h2>
+                IMDb: {movie.imdb_rating || "N/A"}
+              </span>
             </div>
 
-            {/* Stars and Average Rating */}
-            <div className="flex items-center mb-2">
-              <span
-                className={`text-lg font-medium ${
-                  isDarkMode ? "text-yellow-400" : "text-yellow-600"
-                }`}
-              >
-                ★ IMDb: {movie.imdb_rating || "N/A"}
-              </span>
-              <span
-                className={`ml-4 text-lg font-medium ${
-                  isDarkMode ? "text-gray-400" : "text-gray-500"
-                }`}
-              >
-                Average Rating: {movie.average_rating !== undefined ? movie.average_rating : "N/A"} / 5
-              </span>
-            </div>
-
-            {/* Genre, Country, Language */}
-            <div className="mb-4">
+            {/* Metadata */}
+            <div className="mb-4 text-sm italic">
               <p
-                className={`text-sm italic ${
-                  isDarkMode ? "text-gray-400" : "text-gray-500"
+                className={`${
+                  isDarkMode ? "text-gray-400" : "text-gray-600"
                 }`}
               >
-                {movie.genre || "N/A"}, {movie.country || "N/A"}, {movie.language || "N/A"}
+                Type: Movie | Genre: {movie.genre || "N/A"} | Language:{" "}
+                {movie.language || "N/A"}
+              </p>
+              <p
+                className={`mt-1 ${
+                  isDarkMode ? "text-gray-400" : "text-gray-600"
+                }`}
+              >
+                Country: {movie.country || "N/A"}
               </p>
             </div>
 
             {/* Plot */}
             <div className="mb-6">
-              <p
-                className={`text-sm font-semibold mb-2 ${
-                  isDarkMode ? "text-gray-400" : "text-gray-500"
-                }`}
-              >
+              <h3 className={`font-bold mb-1 ${isDarkMode ? "text-white" : "text-black"}`}>
                 Plot:
-              </p>
+              </h3>
               <div
-                className="text-sm overflow-y-auto max-h-[250px] pr-2"
+                className="text-sm overflow-y-auto max-h-[200px] pr-2"
                 style={{
                   scrollbarWidth: "thin",
                   scrollbarColor: isDarkMode
@@ -138,7 +151,7 @@ function ExpandedMovieSeenCard({ movie, onCollapse, onAddReview, onUpdateReview 
                     isDarkMode ? "text-gray-300" : "text-gray-600"
                   }`}
                 >
-                  {movie.plot || "Description not available"}
+                  {movie.plot || "Description not available."}
                 </p>
               </div>
             </div>

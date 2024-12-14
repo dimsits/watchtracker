@@ -1,9 +1,30 @@
 const {
-    addReview,
-    updateReview,
-    getReviewsForMovie,
-    deleteReview,
-  } = require('../models/reviewModel');
+  addReview,
+  updateReview,
+  getReviewsForMovie,
+  deleteReview,
+  getAverageRatingForMovie,
+  getUserReview, // Import the new function
+} = require('../models/reviewModel');
+
+// Get a user's review for a specific movie
+exports.getUserReview = async (req, res) => {
+  const user_id = req.user.user_id; // Assuming auth middleware sets req.user
+  const { movie_id } = req.params;
+
+  if (!movie_id) {
+    return res.status(400).json({ error: 'movie_id is required' });
+  }
+
+  try {
+    const review = await getUserReview(user_id, movie_id);
+    res.status(200).json(review);
+  } catch (error) {
+    console.error('Error fetching user review:', error);
+    res.status(500).json({ error: error.message });
+  }
+};
+
   
   // Add a new review
   exports.addReview = async (req, res) => {

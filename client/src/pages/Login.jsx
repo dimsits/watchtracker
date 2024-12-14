@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import useAuthStore from "../store/authStore";
+import placeholderImage from '../assets/popcorn.png'; 
 
 function Login() {
   const navigate = useNavigate();
@@ -64,8 +65,8 @@ function Login() {
         <div className="hidden md:flex w-1/2 items-center justify-center">
           <div className="w-3/4 h-3/4 flex items-center justify-center rounded-lg overflow-hidden">
             <img
-              src="https://images.pexels.com/photos/55787/pexels-photo-55787.jpeg?cs=srgb&dl=pexels-donaldtong94-55787.jpg&fm=jpg"
-              alt="Placeholder"
+              src={placeholderImage} // Use the imported image here
+              alt="Custom Asset"
               className="w-full h-full object-cover"
             />
           </div>

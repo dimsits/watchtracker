@@ -117,10 +117,30 @@ async function getAverageRatingForMovie(movie_id) {
     }
   }
 
+  // Get a user's review for a specific movie
+async function getUserReview(user_id, movie_id) {
+  if (!user_id || !movie_id) {
+    throw new Error('Both user_id and movie_id are required');
+  }
+
+  const review = await prisma.review.findUnique({
+    where: {
+      user_id_movie_id: { user_id, movie_id },
+    },
+  });
+
+  if (!review) {
+    throw new Error('Review not found');
+  }
+
+  return review;
+}
+
 module.exports = {
   addReview,
   updateReview,
   getReviewsForMovie,
   deleteReview,
   getAverageRatingForMovie,
+  getUserReview, // Add this to the module exports
 };

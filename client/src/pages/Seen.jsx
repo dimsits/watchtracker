@@ -23,37 +23,60 @@ function Seen() {
 
     const fetchSeenMovies = async () => {
       try {
-      const response = await axios.get("http://localhost:5000/api/watchlist/userWatchlist", {
-        headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${token}`,
-        },
-      });
-    
-      if (response.status === 200) {
-        const data = response.data;
-    
-        // Filter and map data to ensure userRating is always set.
-        const seenMovies = data
-        .filter(item => item.watched === true)
-        .map(item => ({
-          ...item,
-          // Suppose the API returns user_rating or a review object. Adjust accordingly.
-          userRating: item.user_rating || (item.review ? item.review.rating : 0),
-        }));
-    
-        // Sort by createdAt descending
-        const sortedData = seenMovies.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-    
-        setMovies(sortedData);
-      } else {
-        console.error("Failed to fetch watchlist");
-      }
+        const response = await axios.get("http://localhost:5000/api/watchlist/userWatchlist", {
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`,
+          },
+        });
+
+        if (response.status === 200) {
+          const data = response.data;
+
+          // Filter movies to include only those with watched = true
+          const seenMovies = data.filter((item) => item.watched === true);
+
+          // Fetch user review for each movie
+          const moviesWithReviews = await Promise.all(
+            seenMovies.map(async (movie) => {
+              try {
+                const reviewResponse = await axios.get(
+                  `http://localhost:5000/api/reviews/user-review/${movie.movie_id}`,
+                  {
+                    headers: {
+                      Authorization: `Bearer ${token}`,
+                    },
+                  }
+                );
+                // Add userRating to the movie if review exists
+                if (reviewResponse.status === 200) {
+                  return {
+                    ...movie,
+                    userRating: reviewResponse.data.rating, // Assuming the API response contains a `rating` field
+                  };
+                }
+              } catch (error) {
+                console.error(`No review found for movie ID: ${movie.movie_id}`);
+              }
+              // Return the movie as is if no review exists
+              return { ...movie, userRating: 0 };
+            })
+          );
+
+          // Sort by createdAt descending
+          const sortedData = moviesWithReviews.sort(
+            (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+          );
+
+          setMovies(sortedData);
+        } else {
+          console.error("Failed to fetch watchlist");
+        }
       } catch (error) {
-      console.error("Error fetching watchlist:", error);
+        console.error("Error fetching watchlist:", error);
       }
     };
-    
+
     fetchSeenMovies();
   }, [isAuthenticated, token]);
 
@@ -168,9 +191,7 @@ function Seen() {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className={`w-full px-4 py-2 rounded-md border ${
-                isDarkMode
-                  ? "bg-gray-700 text-white border-gray-600"
-                  : "bg-white border-gray-300"
+                isDarkMode ? "bg-gray-700 text-white border-gray-600" : "bg-white border-gray-300"
               } focus:outline-none focus:border-blue-500`}
             />
             <span className="absolute right-3 top-2.5 text-gray-400">🔍</span>
@@ -180,14 +201,18 @@ function Seen() {
         {/* Seen Movies Section */}
         {movies.length > 0 && (
           <section>
-            <h2
-              className={`text-2xl font-bold mb-4 ${
-                isDarkMode ? "text-white" : "text-gray-800"
-              }`}
-            >
-              Seen Movies
-            </h2>
-            <div className="flex flex-wrap justify-start gap-4 px-4">
+            <div className="flex items-center mb-6">
+              <div className={`flex-grow h-[2px] ${isDarkMode ? "bg-gray-700" : "bg-gray-300"}`}></div>
+              <h2
+                className={`text-2xl font-bold px-4 ${
+                  isDarkMode ? "text-white" : "text-gray-800"
+                }`}
+              >
+                Seen Movies
+              </h2>
+              <div className={`flex-grow h-[2px] ${isDarkMode ? "bg-gray-700" : "bg-gray-300"}`}></div>
+            </div>
+            <div className="flex flex-wrap justify-start gap-4 px-7">
               {filteredMovies.map((item) => (
                 <MovieCard
                   key={item.movie_id}
@@ -195,7 +220,7 @@ function Seen() {
                     ...item.movie,
                     watched: item.watched,
                     notes: item.notes,
-                    userRating: item.userRating, 
+                    userRating: item.userRating,
                   }}
                   onExpand={handleExpand}
                   onAddReview={handleAddReview}
@@ -203,7 +228,6 @@ function Seen() {
                   onDelete={handleDelete}
                   isExpanded={item.movie_id === expandedMovieId}
                 />
-              
               ))}
             </div>
           </section>
@@ -211,9 +235,7 @@ function Seen() {
 
         {/* No Seen Movies */}
         {movies.length === 0 && !isSearching && (
-          <p
-            className={`text-center ${isDarkMode ? "text-gray-400" : "text-gray-600"}`}
-          >
+          <p className={`text-center ${isDarkMode ? "text-gray-400" : "text-gray-600"}`}>
             You have no seen movies.
           </p>
         )}
