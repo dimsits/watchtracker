@@ -15,21 +15,23 @@ function ExpandedMovieSeenCard({ movie, onCollapse, onAddReview, onUpdateReview 
   }, []);
 
   const handleRatingClick = (value) => {
-    setRating(value);
     if (rating === 0) {
+      // Add a new review
       onAddReview({
         movieId: movie.movie_id,
         rating: value,
       });
       alert("Rating submitted successfully!");
-    } else {
+    } else if (rating !== value) {
+      // Update an existing review
       onUpdateReview({
         movieId: movie.movie_id,
         rating: value,
       });
       alert("Rating updated successfully!");
     }
-    onCollapse();
+    setRating(value); // Update the local state
+    onCollapse(); // Close the expanded card
   };
 
   const handleMouseEnter = (value) => {

@@ -3,6 +3,7 @@ import MovieCard from "../components/MovieCard";
 import Header from "../components/Header";
 import { useTheme } from "../contexts/ThemeContext";
 import useAuthStore from "../store/authStore"; // Import your auth store
+import axios from "axios";
 
 function Seen() {
   const { isDarkMode } = useTheme();
@@ -22,34 +23,37 @@ function Seen() {
 
     const fetchSeenMovies = async () => {
       try {
-        const response = await fetch("http://localhost:5000/api/watchlist/userWatchlist", {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${token}`, // Include the token in headers
-          },
-        });
-
-        if (response.ok) {
-          const data = await response.json();
-
-          // Filter movies to include only those with watched = true
-          const seenMovies = data.filter((movie) => movie.watched);
-
-          // Sort movies by createdAt descending so newest appears first
-          const sortedData = seenMovies.sort(
-            (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
-          );
-
-          setMovies(sortedData);
-        } else {
-          console.error("Failed to fetch watchlist");
-        }
+      const response = await axios.get("http://localhost:5000/api/watchlist/userWatchlist", {
+        headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`,
+        },
+      });
+    
+      if (response.status === 200) {
+        const data = response.data;
+    
+        // Filter and map data to ensure userRating is always set.
+        const seenMovies = data
+        .filter(item => item.watched === true)
+        .map(item => ({
+          ...item,
+          // Suppose the API returns user_rating or a review object. Adjust accordingly.
+          userRating: item.user_rating || (item.review ? item.review.rating : 0),
+        }));
+    
+        // Sort by createdAt descending
+        const sortedData = seenMovies.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+    
+        setMovies(sortedData);
+      } else {
+        console.error("Failed to fetch watchlist");
+      }
       } catch (error) {
-        console.error("Error fetching watchlist:", error);
+      console.error("Error fetching watchlist:", error);
       }
     };
-
+    
     fetchSeenMovies();
   }, [isAuthenticated, token]);
 
@@ -191,7 +195,7 @@ function Seen() {
                     ...item.movie,
                     watched: item.watched,
                     notes: item.notes,
-                    userRating: item.userRating,
+                    userRating: item.userRating, 
                   }}
                   onExpand={handleExpand}
                   onAddReview={handleAddReview}
@@ -199,6 +203,7 @@ function Seen() {
                   onDelete={handleDelete}
                   isExpanded={item.movie_id === expandedMovieId}
                 />
+              
               ))}
             </div>
           </section>

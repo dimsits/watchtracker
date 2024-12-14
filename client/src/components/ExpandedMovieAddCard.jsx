@@ -1,8 +1,10 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useTheme } from "../contexts/ThemeContext";
 
-function ExpandedMovieAddCard({ movie, onAddToWatchlist, onCollapse }) {
+function ExpandedMovieSeenCard({ movie, onCollapse, onAddReview, onUpdateReview }) {
   const { isDarkMode } = useTheme();
+  const [rating, setRating] = useState(movie.userRating || 0); // Initialize with userRating if available
+  const [hoverRating, setHoverRating] = useState(0);
 
   // Disable background scrolling when the card is open
   useEffect(() => {
@@ -11,6 +13,34 @@ function ExpandedMovieAddCard({ movie, onAddToWatchlist, onCollapse }) {
       document.body.classList.remove("overflow-hidden");
     };
   }, []);
+
+  const handleRatingClick = (value) => {
+    if (movie.userRating) {
+      // If there's already a review, update it
+      onUpdateReview({
+        movieId: movie.movie_id,
+        rating: value,
+      });
+      alert("Rating updated successfully!");
+    } else {
+      // If no review exists, add a new one
+      onAddReview({
+        movieId: movie.movie_id,
+        rating: value,
+      });
+      alert("Rating submitted successfully!");
+    }
+    setRating(value); // Update the local state
+    onCollapse(); // Close the expanded card
+  };
+
+  const handleMouseEnter = (value) => {
+    setHoverRating(value);
+  };
+
+  const handleMouseLeave = () => {
+    setHoverRating(0);
+  };
 
   return (
     <div
@@ -56,7 +86,7 @@ function ExpandedMovieAddCard({ movie, onAddToWatchlist, onCollapse }) {
               </h2>
             </div>
 
-            {/* Stars and Ratings */}
+            {/* Stars and Average Rating */}
             <div className="flex items-center mb-2">
               <span
                 className={`text-lg font-medium ${
@@ -71,7 +101,6 @@ function ExpandedMovieAddCard({ movie, onAddToWatchlist, onCollapse }) {
                 }`}
               >
                 Average Rating: {movie.average_rating !== undefined ? movie.average_rating : "N/A"} / 5
-
               </span>
             </div>
 
@@ -82,8 +111,7 @@ function ExpandedMovieAddCard({ movie, onAddToWatchlist, onCollapse }) {
                   isDarkMode ? "text-gray-400" : "text-gray-500"
                 }`}
               >
-                {movie.genre || "N/A"}, {movie.country || "N/A"},{" "}
-                {movie.language || "N/A"}
+                {movie.genre || "N/A"}, {movie.country || "N/A"}, {movie.language || "N/A"}
               </p>
             </div>
 
@@ -115,19 +143,32 @@ function ExpandedMovieAddCard({ movie, onAddToWatchlist, onCollapse }) {
               </div>
             </div>
 
-            {/* Buttons */}
-            <div className="flex space-x-4 mt-4">
-              {/* Add to Watchlist Button */}
-              <button
-                onClick={() => onAddToWatchlist(movie.movie_id)}
-                className={`px-6 py-2 rounded-md font-semibold text-sm transition ${
-                  isDarkMode
-                    ? "bg-darkGranite-button hover:bg-darkGranite-hover text-granite-softWhite"
-                    : "bg-granite-medium hover:bg-granite-light text-granite-softWhite"
-                }`}
-              >
-                Add to Watchlist
-              </button>
+            {/* Interactive Rating */}
+            <div className="mb-4">
+              <p className={`text-sm font-semibold ${isDarkMode ? "text-white" : "text-gray-900"}`}>
+                Rate this movie:
+              </p>
+              <div className="flex space-x-1">
+                {[1, 2, 3, 4, 5].map((star) => (
+                  <button
+                    key={star}
+                    onClick={() => handleRatingClick(star)}
+                    onMouseEnter={() => handleMouseEnter(star)}
+                    onMouseLeave={handleMouseLeave}
+                    className={`text-2xl transition ${
+                      star <= (hoverRating || rating)
+                        ? isDarkMode
+                          ? "text-yellow-400"
+                          : "text-yellow-600"
+                        : isDarkMode
+                        ? "text-gray-500"
+                        : "text-gray-300"
+                    }`}
+                  >
+                    ★
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
         </div>
@@ -136,4 +177,4 @@ function ExpandedMovieAddCard({ movie, onAddToWatchlist, onCollapse }) {
   );
 }
 
-export default ExpandedMovieAddCard;
+export default ExpandedMovieSeenCard;
