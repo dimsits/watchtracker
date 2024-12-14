@@ -1,6 +1,3 @@
-Here’s the documentation rewritten entirely in `.md` format for your `README.md`:
-
-```markdown
 # WatchTracker
 
 **WatchTracker** is a modern web application that helps users organize and track their movie-watching journey. With features like adding movies to a watchlist, marking them as watched, and providing ratings or reviews, WatchTracker ensures a seamless and enjoyable experience for movie enthusiasts.
@@ -133,8 +130,9 @@ watchtracker/
 │   ├── controllers/       # Controller functions for API routes
 │   ├── models/            # Database models (Prisma ORM)
 │   ├── routes/            # API routes
+|   |── middleware/        # Auth middleware
 │   ├── db/                # Prisma schema
-│   └── server.js          # Express server setup
+│   └── index.js          # Express server setup
 │
 ├── frontend/              # Frontend React application
 │   ├── components/        # Reusable React components
@@ -209,9 +207,11 @@ This project is licensed under the MIT License.
 ## Contact
 
 For questions or support:
-- **Name**: Your Name
-- **Email**: your.email@example.com
-- **GitHub**: [your-username](https://github.com/your-username)
-```
+- **Name**: Seth Demeterio
+- **Email**: sethdemeterio47@gmail.com
+- **GitHub**: [dimsits](https://github.com/dimsits)
 
-You can edit and personalize this document further to include real screenshots, adjust the file structure, or modify the contact and repository links. Let me know if you need assistance with specific sections!
+- **Name**: Ryan Krisztonn Yana
+- **Email**: 
+- **GitHub**: [username](https://github.com/username)
+```
