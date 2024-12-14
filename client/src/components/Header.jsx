@@ -44,8 +44,10 @@ function Header() {
                 key={index}
                 to={link.path}
                 className={`relative text-base font-medium transition duration-300 ${
-                  isTransparent || isDarkMode ? "text-white" : "text-gray-800"
-                } hover:text-gray-300`}
+                  isTransparent || isDarkMode
+                    ? "text-white hover:text-gray-800" //
+                    : "text-gray-800 hover:text-gray-900"
+                }`}                
               >
                 {link.name}
                 {location.pathname === link.path && (
