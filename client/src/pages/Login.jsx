@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom"; // Import Link
 import useAuthStore from "../store/authStore";
 import placeholderImage from '../assets/popcorn.png'; 
 
@@ -43,7 +43,6 @@ function Login() {
       setLocalError(err.message || "Failed to login. Please check your credentials and try again.");
     }
   };
-  
 
   return (
     <div className="min-h-screen bg-granite-softWhite flex flex-col">
@@ -122,9 +121,9 @@ function Login() {
 
             <p className="text-sm text-granite-dark text-left mt-4">
               Don't have an account?{" "}
-              <a href="/register" className="text-granite-dark hover:text-granite-medium">
+              <Link to="/register" className="text-granite-dark hover:text-granite-medium">
                 Sign up
-              </a>
+              </Link>
             </p>
           </form>
         </div>
