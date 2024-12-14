@@ -57,6 +57,64 @@ function Seen() {
     setExpandedMovieId(id === expandedMovieId ? null : id);
   };
 
+  const handleAddReview = async ({ movieId, rating }) => {
+    try {
+      const response = await fetch("http://localhost:5000/api/reviews/add", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+        },
+        body: JSON.stringify({ movie_id: movieId, rating }),
+      });
+
+      if (response.ok) {
+        alert("Review added successfully!");
+        updateLocalReview(movieId, rating);
+      } else {
+        const errorData = await response.json();
+        console.error("Failed to add review:", errorData);
+        alert(errorData.message || "Error adding review.");
+      }
+    } catch (error) {
+      console.error("Error adding review:", error);
+      alert("Failed to add review. Please try again later.");
+    }
+  };
+
+  const handleUpdateReview = async ({ movieId, rating }) => {
+    try {
+      const response = await fetch("http://localhost:5000/api/reviews/update", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+        },
+        body: JSON.stringify({ movie_id: movieId, rating }),
+      });
+
+      if (response.ok) {
+        alert("Review updated successfully!");
+        updateLocalReview(movieId, rating);
+      } else {
+        const errorData = await response.json();
+        console.error("Failed to update review:", errorData);
+        alert(errorData.message || "Error updating review.");
+      }
+    } catch (error) {
+      console.error("Error updating review:", error);
+      alert("Failed to update review. Please try again later.");
+    }
+  };
+
+  const updateLocalReview = (movieId, rating) => {
+    setMovies((prevMovies) =>
+      prevMovies.map((movie) =>
+        movie.movie_id === movieId ? { ...movie, userRating: rating } : movie
+      )
+    );
+  };
+
   const filteredMovies = movies.filter((item) =>
     item.movie.title.toLowerCase().includes(searchQuery.toLowerCase())
   );
@@ -108,8 +166,11 @@ function Seen() {
                     ...item.movie,
                     watched: item.watched,
                     notes: item.notes,
+                    userRating: item.userRating,
                   }}
                   onExpand={handleExpand}
+                  onAddReview={handleAddReview}
+                  onUpdateReview={handleUpdateReview}
                   isExpanded={item.movie_id === expandedMovieId}
                 />
               ))}

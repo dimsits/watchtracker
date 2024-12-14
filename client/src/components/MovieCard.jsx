@@ -3,7 +3,7 @@ import { useTheme } from "../contexts/ThemeContext";
 import ExpandedMovieCard from "./ExpandedMovieCard";
 import ExpandedMovieSeenCard from "./ExpandedMovieSeenCard";
 
-function MovieCard({ movie, onMarkSeen, onDelete, onAddReview }) {
+function MovieCard({ movie, onMarkSeen, onDelete, onAddReview, onUpdateReview }) {
   const { isDarkMode } = useTheme();
   const [showMenu, setShowMenu] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
@@ -143,6 +143,10 @@ function MovieCard({ movie, onMarkSeen, onDelete, onAddReview }) {
               onCollapse={handleCollapse}
               onAddReview={(reviewData) => {
                 onAddReview(reviewData);
+                handleCollapse();
+              }}
+              onUpdateReview={(reviewData) => {
+                onUpdateReview(reviewData);
                 handleCollapse();
               }}
             />

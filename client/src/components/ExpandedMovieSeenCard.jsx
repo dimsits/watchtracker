@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useTheme } from "../contexts/ThemeContext";
 
-function ExpandedMovieSeenCard({ movie, onCollapse, onAddReview }) {
+function ExpandedMovieSeenCard({ movie, onCollapse, onAddReview, onUpdateReview }) {
   const { isDarkMode } = useTheme();
   const [rating, setRating] = useState(0);
   const [hoverRating, setHoverRating] = useState(0);
@@ -16,11 +16,19 @@ function ExpandedMovieSeenCard({ movie, onCollapse, onAddReview }) {
 
   const handleRatingClick = (value) => {
     setRating(value);
-    onAddReview({
-      movieId: movie.movie_id,
-      rating,
-    });
-    alert("Rating submitted successfully!");
+    if (rating === 0) {
+      onAddReview({
+        movieId: movie.movie_id,
+        rating: value,
+      });
+      alert("Rating submitted successfully!");
+    } else {
+      onUpdateReview({
+        movieId: movie.movie_id,
+        rating: value,
+      });
+      alert("Rating updated successfully!");
+    }
     onCollapse();
   };
 
