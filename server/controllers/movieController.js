@@ -2,7 +2,7 @@ const {
   createMovie,
   searchMoviesByTitle,
 } = require('../models/movieModel');
-const { getAverageRatingForMovie } = require('../controllers/reviewController');
+const { getAverageRatingForMovie } = require('../models/reviewModel');
 
 // Create a new movie using OMDb API (and save to the database)
 exports.searchMoviesByTitle = async (req, res) => {
