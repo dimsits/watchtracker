@@ -3,7 +3,7 @@ import { useTheme } from "../contexts/ThemeContext";
 
 function ExpandedMovieSeenCard({ movie, onCollapse, onAddReview, onUpdateReview }) {
   const { isDarkMode } = useTheme();
-  const [rating, setRating] = useState(0);
+  const [rating, setRating] = useState(movie.userRating || 0); // Initialize with userRating if available
   const [hoverRating, setHoverRating] = useState(0);
 
   // Disable background scrolling when the card is open

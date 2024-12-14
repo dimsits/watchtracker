@@ -107,6 +107,31 @@ function Seen() {
     }
   };
 
+  const handleDelete = async (movieId) => {
+    try {
+      const response = await fetch("http://localhost:5000/api/watchlist/remove", {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+        },
+        body: JSON.stringify({ movie_id: movieId }),
+      });
+
+      if (response.ok) {
+        alert("Movie removed successfully!");
+        setMovies((prevMovies) => prevMovies.filter((movie) => movie.movie_id !== movieId));
+      } else {
+        const errorData = await response.json();
+        console.error("Failed to delete movie:", errorData);
+        alert(errorData.message || "Error deleting movie.");
+      }
+    } catch (error) {
+      console.error("Error deleting movie:", error);
+      alert("Failed to delete movie. Please try again later.");
+    }
+  };
+
   const updateLocalReview = (movieId, rating) => {
     setMovies((prevMovies) =>
       prevMovies.map((movie) =>
@@ -171,6 +196,7 @@ function Seen() {
                   onExpand={handleExpand}
                   onAddReview={handleAddReview}
                   onUpdateReview={handleUpdateReview}
+                  onDelete={handleDelete}
                   isExpanded={item.movie_id === expandedMovieId}
                 />
               ))}

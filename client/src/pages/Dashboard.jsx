@@ -3,7 +3,8 @@ import MovieCard from "../components/MovieCard";
 import ExpandedMovieCard from "../components/ExpandedMovieCard";
 import Header from "../components/Header";
 import { useTheme } from "../contexts/ThemeContext";
-import useAuthStore from "../store/authStore"; // Import your auth store
+import useAuthStore from "../store/authStore";
+import axios from "axios";
 
 function Dashboard() {
   const { isDarkMode } = useTheme();
@@ -12,32 +13,28 @@ function Dashboard() {
   const [expandedMovieId, setExpandedMovieId] = useState(null);
   const [movies, setMovies] = useState([]);
 
-  // Access token and auth status from the store
   const { token, isAuthenticated } = useAuthStore();
 
   useEffect(() => {
-    // Only fetch the watchlist if the user is authenticated
     if (!isAuthenticated) {
       return;
     }
 
     const fetchWatchlist = async () => {
       try {
-        const response = await fetch("http://localhost:5000/api/watchlist/userWatchlist", {
-          method: "GET",
+        const response = await axios.get("http://localhost:5000/api/watchlist/userWatchlist", {
           headers: {
             "Content-Type": "application/json",
-            "Authorization": `Bearer ${token}`, // Include the token in headers
+            "Authorization": `Bearer ${token}`,
           },
         });
 
-        if (response.ok) {
-          const data = await response.json();
-
+        if (response.status === 200) {
+          const data = response.data;
           const unwatchedMovies = data.filter((movie) => !movie.watched);
-
-          // Sort movies by createdAt descending so newest appears first
-          const sortedData = unwatchedMovies.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+          const sortedData = unwatchedMovies.sort(
+            (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+          );
           setMovies(sortedData);
         } else {
           console.error("Failed to fetch watchlist");
@@ -57,17 +54,13 @@ function Dashboard() {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`, // Include token
+          "Authorization": `Bearer ${token}`,
         },
         body: JSON.stringify({ movie_id: id }),
       });
-
+  
       if (response.ok) {
-        setMovies((prevMovies) =>
-          prevMovies.map((item) =>
-            item.movie_id === id ? { ...item, watched: true } : item
-          )
-        );
+        setMovies((prevMovies) => prevMovies.filter((item) => item.movie_id !== id));
         setExpandedMovieId(null);
       } else {
         console.error("Failed to mark as watched");
@@ -76,6 +69,7 @@ function Dashboard() {
       console.error("Error marking as watched:", error);
     }
   };
+  
 
   const handleDelete = async (id) => {
     if (!isAuthenticated) return;
@@ -84,7 +78,7 @@ function Dashboard() {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`, // Include token
+          "Authorization": `Bearer ${token}`,
         },
         body: JSON.stringify({ movie_id: id }),
       });
@@ -114,7 +108,6 @@ function Dashboard() {
 
   const expandedMovie = movies.find((item) => item.movie_id === expandedMovieId);
 
-  // Take the first 20 items from the already sorted array (by createdAt) as "Recently Added"
   const recentlyAddedMovies = movies.slice(0, 20);
 
   return (
@@ -143,15 +136,18 @@ function Dashboard() {
         {/* Recently Added Section */}
         {recentlyAddedMovies.length > 0 && !isSearching && (
           <section className="mb-8">
-            <h2
-              className={`text-2xl font-bold mb-4 ${
-                isDarkMode ? "text-white" : "text-gray-800"
-              }`}
-            >
-              Recently Added
-            </h2>
+            <div className="flex items-center mb-6">
+              <div className={`flex-grow h-[2px] ${isDarkMode ? "bg-gray-700" : "bg-gray-300"}`}></div>
+              <h2
+                className={`text-2xl font-bold px-4 ${
+                  isDarkMode ? "text-white" : "text-gray-800"
+                }`}
+              >
+                Recently Added
+              </h2>
+              <div className={`flex-grow h-[2px] ${isDarkMode ? "bg-gray-700" : "bg-gray-300"}`}></div>
+            </div>
             <div className="relative group">
-              {/* Scrollable Row */}
               <div className="flex gap-4 overflow-x-auto scrollbar-hide recently-added-scroll">
                 {recentlyAddedMovies.map((item) => (
                   <MovieCard
@@ -168,60 +164,42 @@ function Dashboard() {
                   />
                 ))}
               </div>
-
-              {/* Scroll Buttons */}
-              <button
-                onClick={() => {
-                  const scrollContainer = document.querySelector(".recently-added-scroll");
-                  if (scrollContainer) scrollContainer.scrollBy({ left: -400, behavior: "smooth" });
-                }}
-                className="absolute left-0 top-1/2 -translate-y-1/2 bg-black/50 text-white p-4 rounded-r opacity-0 group-hover:opacity-100 transition-opacity"
-              >
-                ←
-              </button>
-              <button
-                onClick={() => {
-                  const scrollContainer = document.querySelector(".recently-added-scroll");
-                  if (scrollContainer) scrollContainer.scrollBy({ left: 400, behavior: "smooth" });
-                }}
-                className="absolute right-0 top-1/2 -translate-y-1/2 bg-black/50 text-white p-4 rounded-l opacity-0 group-hover:opacity-100 transition-opacity"
-              >
-                →
-              </button>
             </div>
           </section>
         )}
 
         {/* All Movies Section */}
-<section>
-  <h2
-    className={`text-2xl font-bold mb-4 ${
-      isDarkMode ? "text-white" : "text-gray-800"
-    }`}
-  >
-    All Movies
-  </h2>
-  <div className="flex flex-wrap justify-center md:justify-start gap-6 px-6">
-    {filteredMovies.map((item) => (
-      <MovieCard
-        key={item.movie.movie_id}
-        movie={{
-          ...item.movie,
-          watched: item.watched,
-          notes: item.notes,
-        }}
-        onMarkSeen={handleMarkSeen}
-        onDelete={handleDelete}
-        onExpand={handleExpand}
-        isExpanded={item.movie.movie_id === expandedMovieId}
-      />
-    ))}
-  </div>
-</section>
-
+        <section>
+          <div className="flex items-center mb-6">
+            <div className={`flex-grow h-[2px] ${isDarkMode ? "bg-gray-700" : "bg-gray-300"}`}></div>
+            <h2
+              className={`text-2xl font-bold px-4 ${
+                isDarkMode ? "text-white" : "text-gray-800"
+              }`}
+            >
+              All Movies
+            </h2>
+            <div className={`flex-grow h-[2px] ${isDarkMode ? "bg-gray-700" : "bg-gray-300"}`}></div>
+          </div>
+          <div className="flex flex-wrap justify-start gap-4 px-7">
+            {filteredMovies.map((item) => (
+              <MovieCard
+                key={item.movie.movie_id}
+                movie={{
+                  ...item.movie,
+                  watched: item.watched,
+                  notes: item.notes,
+                }}
+                onMarkSeen={handleMarkSeen}
+                onDelete={handleDelete}
+                onExpand={handleExpand}
+                isExpanded={item.movie.movie_id === expandedMovieId}
+              />
+            ))}
+          </div>
+        </section>
       </main>
 
-      {/* Expanded Movie Card */}
       {expandedMovie && (
         <ExpandedMovieCard
           movie={{
