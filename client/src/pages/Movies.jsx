@@ -37,36 +37,30 @@ function Movies() {
 
   const handleKeyDown = (e) => {
     if (e.key === 'Enter') {
-      e.preventDefault(); // Prevent the default form submission (if inside a form)
+      e.preventDefault();
       handleSearch();
     }
   };
 
   const handleAddToWatchlist = async (movie_id) => {
-    console.log('Movie ID being added:', movie_id);
-  
     try {
       const token = useAuthStore.getState().token;
-  
-      // Log the token for debugging
-      console.log('Auth Token from Zustand:', token);
-  
+
       if (!token) {
         alert('You are not authenticated. Please log in.');
         return;
       }
-  
+
       const response = await axios.post(
         'http://localhost:5000/api/watchlist/add',
-        { movie_id }, // Request body
+        { movie_id },
         {
           headers: {
-            Authorization: `Bearer ${token}`, // Attach token in headers
+            Authorization: `Bearer ${token}`,
           },
         }
       );
-  
-      console.log('Response:', response.data);
+
       alert('Movie added to watchlist successfully!');
     } catch (error) {
       console.error('Error adding to watchlist:', error.response ? error.response.data : error);
@@ -75,7 +69,6 @@ function Movies() {
       );
     }
   };
-  
 
   const filteredMovies = movies.filter((movie) =>
     movie.title.toLowerCase().includes(searchQuery.toLowerCase())
@@ -98,7 +91,7 @@ function Movies() {
               placeholder="Search movies..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              onKeyDown={handleKeyDown} // Added onKeyDown handler
+              onKeyDown={handleKeyDown}
               className={`w-full px-4 py-2 rounded-md border ${
                 isDarkMode
                   ? 'bg-gray-700 text-white border-gray-600'
@@ -119,28 +112,40 @@ function Movies() {
           )}
         </div>
 
+        {/* All Movies Section */}
         {/* Movies Grid */}
-        <section>
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-7 gap-4">
-            {filteredMovies.length > 0 ? (
-              filteredMovies.map((movie) => (
-                <MovieAddCard
-                  key={movie.movie_id}
-                  movie={movie}
-                  onAddToWatchlist={handleAddToWatchlist} // Pass handler
-                />
-              ))
-            ) : (
-              <p
-                className={`text-center ${
-                  isDarkMode ? 'text-gray-400' : 'text-granite-medium'
-                }`}
-              >
-                No movies match your search.
-              </p>
-            )}
-          </div>
-        </section>
+<section>
+  <div className="container mx-auto px-4">
+    <h2
+      className={`text-2xl font-bold mb-6 ${
+        isDarkMode ? "text-white" : "text-gray-900"
+      }`}
+    >
+      Search Results
+    </h2>
+    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+      {filteredMovies.length > 0 ? (
+        filteredMovies.map((movie) => (
+          <MovieAddCard
+            key={movie.movie_id}
+            movie={movie}
+            onAddToWatchlist={handleAddToWatchlist}
+          />
+        ))
+      ) : (
+        <p
+          className={`text-center ${
+            isDarkMode ? "text-gray-400" : "text-granite-medium"
+          }`}
+        >
+          No movies match your search.
+        </p>
+      )}
+    </div>
+  </div>
+</section>
+
+
       </main>
     </div>
   );
