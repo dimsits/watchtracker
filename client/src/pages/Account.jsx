@@ -3,7 +3,6 @@ import Header from '../components/Header';
 import { useTheme } from '../contexts/ThemeContext';
 import useAuthStore from '../store/authStore';
 import { useNavigate } from 'react-router-dom';
-import regions from '../assets/regions'; // Import regions list
 
 function Account() {
   const { isDarkMode, toggleTheme } = useTheme();
@@ -14,15 +13,12 @@ function Account() {
     fullName: user?.name || 'John Doe',
     username: user?.username || 'johndoe',
     email: user?.email || 'john@example.com',
-    region: user?.region || '',
-    profilePicture: user?.profilePicture || '/placeholder.svg',
+    password: '********', // Default censored password
   });
 
   const [isEditing, setIsEditing] = useState(false);
   const [editedUserInfo, setEditedUserInfo] = useState({ ...userInfo });
-  const [filteredRegions, setFilteredRegions] = useState([]);
   const [showMenu, setShowMenu] = useState(false);
-  const [showAppearanceModal, setShowAppearanceModal] = useState(false);
 
   const handleEdit = () => {
     setIsEditing(true);
@@ -35,34 +31,16 @@ function Account() {
       ...prevState,
       [name]: value,
     }));
-
-    if (name === 'region') {
-      const searchQuery = value.toLowerCase();
-      const results = regions.filter((region) =>
-        region.toLowerCase().startsWith(searchQuery)
-      );
-      setFilteredRegions(results);
-    }
-  };
-
-  const handleRegionSelect = (region) => {
-    setEditedUserInfo((prevState) => ({
-      ...prevState,
-      region,
-    }));
-    setFilteredRegions([]); // Clear dropdown after selection
   };
 
   const handleSave = (e) => {
     e.preventDefault();
     setUserInfo(editedUserInfo);
     setIsEditing(false);
-    setFilteredRegions([]);
   };
 
   const handleCancel = () => {
     setEditedUserInfo({ ...userInfo });
-    setFilteredRegions([]);
     setIsEditing(false);
   };
 
@@ -96,28 +74,6 @@ function Account() {
           {/* Profile Header */}
           <div className="flex items-center justify-between mb-8">
             <div className="relative flex items-center space-x-6">
-              <div className="w-24 h-24 rounded-full bg-gray-200 overflow-hidden relative group">
-                <img
-                  src={editedUserInfo.profilePicture}
-                  alt="Profile"
-                  className="w-full h-full object-cover transition duration-300 group-hover:opacity-50"
-                />
-                {isEditing && (
-                  <label
-                    htmlFor="profile-picture-upload"
-                    className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition duration-300 cursor-pointer text-white text-sm font-semibold"
-                  >
-                    Change
-                    <input
-                      type="file"
-                      id="profile-picture-upload"
-                      accept="image/*"
-                      className="hidden"
-                      onChange={(e) => handleInputChange(e, 'profilePicture')}
-                    />
-                  </label>
-                )}
-              </div>
               <div>
                 <h3 className={`text-2xl font-nunito ${isDarkMode ? 'text-white' : 'text-granite-dark'}`}>
                   {userInfo.fullName}
@@ -212,34 +168,21 @@ function Account() {
                   } ${isEditing ? 'focus:outline-none focus:ring-2 focus:ring-blue-500' : 'cursor-not-allowed'}`}
                 />
               </div>
-              {/* Region */}
-              <div className="relative">
+              {/* Password */}
+              <div>
                 <label className={`block text-lg ${isDarkMode ? 'text-white' : 'text-granite-dark'} mb-2`}>
-                  Region
+                  Password
                 </label>
                 <input
-                  type="text"
-                  name="region"
-                  value={editedUserInfo.region}
+                  type="password"
+                  name="password"
+                  value={editedUserInfo.password}
                   onChange={handleInputChange}
                   disabled={!isEditing}
                   className={`w-full p-4 border rounded-lg ${
                     isDarkMode ? 'bg-gray-700 text-white border-gray-600' : 'bg-gray-50 text-black border-gray-300'
                   } ${isEditing ? 'focus:outline-none focus:ring-2 focus:ring-blue-500' : 'cursor-not-allowed'}`}
                 />
-                {isEditing && filteredRegions.length > 0 && (
-                  <ul className="absolute bg-white border border-gray-300 mt-1 max-h-40 overflow-y-auto rounded-md shadow-lg w-full z-10">
-                    {filteredRegions.map((region, index) => (
-                      <li
-                        key={index}
-                        className="px-4 py-2 hover:bg-blue-500 text-black hover:text-black cursor-pointer"
-                        onClick={() => handleRegionSelect(region)}
-                      >
-                        {region}
-                      </li>
-                    ))}
-                  </ul>
-                )}
               </div>
             </div>
 
