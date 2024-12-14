@@ -75,22 +75,3 @@ const {
       res.status(500).json({ error: error.message });
     }
   };
-
-  // Get the average rating for a movie
-  exports.getAverageRatingForMovie = async (req, res) => {
-    const { movie_id } = req.body;
-  
-    if (!movie_id) {
-      return res.status(400).json({ error: 'movie_id is required' });
-    }
-  
-    try {
-      const averageRating = await getAverageRatingForMovie(movie_id);
-      res.status(200).json({ average_rating: averageRating });
-    } catch (error) {
-      console.error('Error fetching average rating:', error);
-      res.status(500).json({ error: error.message });
-    }
-  };
-  
-  
