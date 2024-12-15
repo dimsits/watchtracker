@@ -8,10 +8,6 @@ const JWT_SECRET = process.env.JWT_SECRET;
 async function registerUser(req, res) {
     const { username, name, email, password } = req.body;
 
-    if (!username || !email || !name || !password) {
-        return res.status(400).json({ error: 'All fields are required' });
-    }
-
     try {
         const existingUser = await getUserByEmail(email);
         if (existingUser) {
@@ -24,13 +20,17 @@ async function registerUser(req, res) {
         // Generate a token
         const token = jwt.sign({ user_id: user.user_id, email: user.email, role: user.role }, JWT_SECRET, { expiresIn: '3h' });
 
-        res.status(201).json({ message: 'User registered', token, user: {
-            user_id: user.user_id,
-            username: user.username,
-            name: user.name,
-            email: user.email,
-            role: user.role
-        } });
+        res.status(201).json({ 
+            message: 'User registered', 
+            token, 
+            user: {
+                user_id: user.user_id,
+                username: user.username,
+                name: user.name,
+                email: user.email,
+                role: user.role
+            } 
+        });
     } catch (error) {
         console.log(error);
         res.status(500).json({ error: 'Failed to register' });
@@ -39,10 +39,6 @@ async function registerUser(req, res) {
 
 async function loginUser(req, res) {
     const { email, password } = req.body;
-
-    if (!email || !password) {
-        return res.status(400).json({ error: 'All fields are required' });
-    }
 
     try {
         const user = await getUserByEmail(email);
@@ -55,16 +51,20 @@ async function loginUser(req, res) {
             return res.status(400).json({ error: 'Invalid credentials' });
         }
         
-        const token = jwt.sign({ user_id: user.user_id, email: user.email,role: user.role }, JWT_SECRET, { expiresIn: '3h' });
-        res.status(200).json({ message: 'User logged in', token , user: {
-            user_id: user.user_id,
-            username: user.username,
-            name: user.name,
-            email: user.email,
-            role: user.role
-        } }); 
+        const token = jwt.sign({ user_id: user.user_id, email: user.email, role: user.role }, JWT_SECRET, { expiresIn: '3h' });
+        res.status(200).json({ 
+            message: 'User logged in', 
+            token, 
+            user: {
+                user_id: user.user_id,
+                username: user.username,
+                name: user.name,
+                email: user.email,
+                role: user.role
+            } 
+        }); 
     } catch (error) {
-            res.status(500).json({ error: 'Failed to login' });
+        res.status(500).json({ error: 'Failed to login' });
     }
 }
 
@@ -92,4 +92,3 @@ function isTokenBlacklisted(token) {
 }
 
 module.exports = { registerUser, loginUser, logoutUser, isTokenBlacklisted };
-
