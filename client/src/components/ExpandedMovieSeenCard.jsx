@@ -35,7 +35,6 @@ function ExpandedMovieSeenCard({ movie, onCollapse, onAddReview, onUpdateReview 
         movieId: movie.movie_id,
         rating: value,
       });
-      // alert("Rating updated successfully!");
     }
     handleClose();
   };
@@ -92,33 +91,47 @@ function ExpandedMovieSeenCard({ movie, onCollapse, onAddReview, onUpdateReview 
               {movie.title} ({movie.year || "N/A"})
             </h2>
 
-            {/* IMDb Rating and Stars */}
-            <div className="flex items-center mb-4">
+            {/* IMDb Rating and Average Rating */}
+            <div className="flex items-center mb-4 space-x-6">
+              {/* IMDb Rating */}
               <div className="flex items-center">
-                {[...Array(5)].map((_, index) => (
-                  <span
-                    key={index}
-                    className={`text-xl ${
-                      movie.imdb_rating / 2 > index
-                        ? isDarkMode
-                          ? "text-yellow-400"
-                          : "text-yellow-600"
-                        : isDarkMode
-                        ? "text-gray-500"
-                        : "text-gray-400"
-                    }`}
-                  >
-                    ★
-                  </span>
-                ))}
+                <div className="flex items-center">
+                  {[...Array(5)].map((_, index) => (
+                    <span
+                      key={index}
+                      className={`text-xl ${
+                        movie.imdb_rating / 2 > index
+                          ? isDarkMode
+                            ? "text-yellow-400"
+                            : "text-yellow-600"
+                          : isDarkMode
+                          ? "text-gray-500"
+                          : "text-gray-400"
+                      }`}
+                    >
+                      ★
+                    </span>
+                  ))}
+                </div>
+                <span
+                  className={`ml-3 font-medium ${
+                    isDarkMode ? "text-gray-300" : "text-gray-600"
+                  }`}
+                >
+                  IMDb: {movie.imdb_rating || "N/A"}
+                </span>
               </div>
-              <span
-                className={`ml-3 font-medium ${
-                  isDarkMode ? "text-gray-300" : "text-gray-600"
-                }`}
-              >
-                IMDb: {movie.imdb_rating || "N/A"}
-              </span>
+
+              {/* Average Rating */}
+              <div className="flex items-center">
+                <span
+                  className={`ml-3 font-medium ${
+                    isDarkMode ? "text-gray-300" : "text-gray-600"
+                  }`}
+                >
+                  Average: {movie.average_rating || 'N/A'} / 5
+                </span>
+              </div>
             </div>
 
             {/* Metadata */}

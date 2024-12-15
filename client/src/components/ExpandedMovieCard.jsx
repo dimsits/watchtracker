@@ -65,32 +65,46 @@ function ExpandedMovieCard({ movie, onMarkSeen, onDelete, onCollapse }) {
             </h2>
 
             {/* Rating and Stars */}
-            <div className="flex items-center mb-4">
+            <div className="flex items-center mb-4 space-x-6">
+              {/* IMDb Rating */}
               <div className="flex items-center">
-                {[...Array(5)].map((_, index) => (
-                  <span
-                    key={index}
-                    className={`text-xl ${
-                      movie.imdb_rating / 2 > index
-                        ? isDarkMode
-                          ? "text-yellow-400"
-                          : "text-yellow-600"
-                        : isDarkMode
-                        ? "text-gray-500"
-                        : "text-gray-400"
-                    }`}
-                  >
-                    ★
-                  </span>
-                ))}
+                <div className="flex items-center">
+                  {[...Array(5)].map((_, index) => (
+                    <span
+                      key={index}
+                      className={`text-xl ${
+                        movie.imdb_rating / 2 > index
+                          ? isDarkMode
+                            ? "text-yellow-400"
+                            : "text-yellow-600"
+                          : isDarkMode
+                          ? "text-gray-500"
+                          : "text-gray-400"
+                      }`}
+                    >
+                      ★
+                    </span>
+                  ))}
+                </div>
+                <span
+                  className={`ml-3 font-medium ${
+                    isDarkMode ? "text-gray-300" : "text-gray-600"
+                  }`}
+                >
+                  IMDb: {movie.imdb_rating || "N/A"}
+                </span>
               </div>
-              <span
-                className={`ml-3 font-medium ${
-                  isDarkMode ? "text-gray-300" : "text-gray-600"
-                }`}
-              >
-                IMDb: {movie.imdb_rating || "N/A"}
-              </span>
+
+              {/* Average Rating */}
+              <div className="flex items-center">
+                <span
+                  className={`ml-3 font-medium ${
+                    isDarkMode ? "text-gray-300" : "text-gray-600"
+                  }`}
+                >
+                  Average: {movie.average_rating || 'N/A'} / 5
+                </span>
+              </div>
             </div>
 
             {/* Metadata */}
@@ -100,8 +114,7 @@ function ExpandedMovieCard({ movie, onMarkSeen, onDelete, onCollapse }) {
                   isDarkMode ? "text-gray-400" : "text-gray-600"
                 }`}
               >
-                Type: TV Series | Genre: {movie.genre || "N/A"} | Language:{" "}
-                {movie.language || "N/A"}
+                Type: TV Series | Genre: {movie.genre || "N/A"} | Language: {movie.language || "N/A"}
               </p>
               <p
                 className={`mt-1 ${
