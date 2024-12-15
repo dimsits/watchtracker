@@ -131,6 +131,7 @@ watchtracker/
 │   ├── models/            # Database models (Prisma ORM)
 │   ├── routes/            # API routes
 |   |── middleware/        # middleware functions
+|   |── utils              # validation utils
 │   ├── db/                # Prisma schema
 │   └── index.js          # Express server setup
 │
