@@ -17,9 +17,7 @@
 - **Search**:
   - Search for movies and view detailed information.
 - **Interactive Rating System**:
-  - Rate movies using a 5-star system with dynamic updates.
-- **Responsive Design**:
-  - Fully responsive for both desktop and mobile devices.
+  - Rate movies using a 5-star.
 - **Dark Mode**:
   - Switch between light and dark themes for an enhanced viewing experience.
 
