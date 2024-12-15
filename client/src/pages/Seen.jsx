@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import MovieCard from "../components/MovieCard";
 import Header from "../components/Header";
 import { useTheme } from "../contexts/ThemeContext";
-import useAuthStore from "../store/authStore"; // Import your auth store
+import useAuthStore from "../store/authStore";
 import axios from "axios";
 
 function Seen() {
@@ -11,32 +11,25 @@ function Seen() {
   const [isSearching, setIsSearching] = useState(false);
   const [expandedMovieId, setExpandedMovieId] = useState(null);
   const [movies, setMovies] = useState([]);
-
-  // Access token and auth status from the store
   const { token, isAuthenticated } = useAuthStore();
 
   useEffect(() => {
-    // Only fetch the watchlist if the user is authenticated
-    if (!isAuthenticated) {
-      return;
-    }
+    if (!isAuthenticated) return;
 
     const fetchSeenMovies = async () => {
       try {
         const response = await axios.get("http://localhost:5000/api/watchlist/userWatchlist", {
           headers: {
             "Content-Type": "application/json",
-            "Authorization": `Bearer ${token}`,
+            Authorization: `Bearer ${token}`,
           },
         });
 
         if (response.status === 200) {
           const data = response.data;
 
-          // Filter movies to include only those with watched = true
           const seenMovies = data.filter((item) => item.watched === true);
 
-          // Fetch user review for each movie
           const moviesWithReviews = await Promise.all(
             seenMovies.map(async (movie) => {
               try {
@@ -48,22 +41,20 @@ function Seen() {
                     },
                   }
                 );
-                // Add userRating to the movie if review exists
+
                 if (reviewResponse.status === 200) {
                   return {
                     ...movie,
-                    userRating: reviewResponse.data.rating, // Assuming the API response contains a `rating` field
+                    userRating: reviewResponse.data.rating,
                   };
                 }
               } catch (error) {
                 console.error(`No review found for movie ID: ${movie.movie_id}`);
               }
-              // Return the movie as is if no review exists
               return { ...movie, userRating: 0 };
             })
           );
 
-          // Sort by createdAt descending
           const sortedData = moviesWithReviews.sort(
             (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
           );
@@ -90,7 +81,7 @@ function Seen() {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`,
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({ movie_id: movieId, rating }),
       });
@@ -98,6 +89,7 @@ function Seen() {
       if (response.ok) {
         alert("Review added successfully!");
         updateLocalReview(movieId, rating);
+        await fetchAndUpdateAverage(movieId);
       } else {
         const errorData = await response.json();
         console.error("Failed to add review:", errorData);
@@ -115,7 +107,7 @@ function Seen() {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`,
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({ movie_id: movieId, rating }),
       });
@@ -123,6 +115,7 @@ function Seen() {
       if (response.ok) {
         alert("Review updated successfully!");
         updateLocalReview(movieId, rating);
+        await fetchAndUpdateAverage(movieId);
       } else {
         const errorData = await response.json();
         console.error("Failed to update review:", errorData);
@@ -140,7 +133,7 @@ function Seen() {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`,
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({ movie_id: movieId }),
       });
@@ -167,6 +160,28 @@ function Seen() {
     );
   };
 
+  // Fetch updated average rating from the server and update local state
+  const fetchAndUpdateAverage = async (movieId) => {
+    try {
+      const response = await axios.get(`http://localhost:5000/api/reviews/Average/${movieId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const updatedAverage = response.data.average_rating;
+      setMovies((prevMovies) =>
+        prevMovies.map((movie) =>
+          movie.movie_id === movieId
+            ? { ...movie, movie: { ...movie.movie, average_rating: updatedAverage } }
+            : movie
+        )
+      );
+    } catch (error) {
+      console.error("Failed to fetch updated average rating:", error);
+    }
+  };
+
   const filteredMovies = movies.filter((item) =>
     item.movie.title.toLowerCase().includes(searchQuery.toLowerCase())
   );
@@ -175,12 +190,9 @@ function Seen() {
     setIsSearching(searchQuery !== "");
   }, [searchQuery]);
 
-  const expandedMovie = movies.find((item) => item.movie_id === expandedMovieId);
-
   return (
     <div className={`min-h-screen ${isDarkMode ? "bg-gray-900" : "bg-gray-100"}`}>
       <Header />
-
       <main className="pt-20 px-4 md:px-8">
         {/* Search Bar */}
         <div className="mb-8">
@@ -222,11 +234,10 @@ function Seen() {
                     notes: item.notes,
                     userRating: item.userRating,
                   }}
-                  onExpand={handleExpand}
+                  onExpand={() => {}}
                   onAddReview={handleAddReview}
                   onUpdateReview={handleUpdateReview}
                   onDelete={handleDelete}
-                  isExpanded={item.movie_id === expandedMovieId}
                 />
               ))}
             </div>

@@ -1,7 +1,11 @@
+// pages/Login.jsx
 import { useState } from "react";
-import { useNavigate, Link } from "react-router-dom"; // Import Link
+import { useNavigate, Link } from "react-router-dom";
 import useAuthStore from "../store/authStore";
-import placeholderImage from '../assets/popcorn.png'; 
+import placeholderImage from "../assets/popcorn.png";
+import { validateLogin } from "../utils/validate"; // Import validation
+import ErrorMessage from "../components/ErrorMessage"; // Import ErrorMessage
+import InputField from "../components/InputField"; // Import InputField
 
 function Login() {
   const navigate = useNavigate();
@@ -12,6 +16,7 @@ function Login() {
     password: "",
   });
   const [localError, setLocalError] = useState("");
+  const [validationErrors, setValidationErrors] = useState({});
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -24,23 +29,26 @@ function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLocalError("");
-  
-    if (!formData.email || !formData.password) {
-      setLocalError("All fields are required");
+    setValidationErrors({});
+
+    // Validate fields
+    const errors = validateLogin(formData.email, formData.password);
+    if (Object.keys(errors).length > 0) {
+      setValidationErrors(errors);
       return;
     }
-  
+
     try {
       await login({
         email: formData.email,
         password: formData.password,
       });
-  
+
       // Navigate to dashboard only if login is successful
       navigate("/dashboard");
     } catch (err) {
-      // If there's an error, it will be caught here
-      setLocalError(err.message || "Failed to login. Please check your credentials and try again.");
+      // Handle error
+      setLocalError(err.message || "Failed to login. Please check your credentials.");
     }
   };
 
@@ -82,34 +90,27 @@ function Login() {
               Enter your credentials to access your account <br />
               Use /dashboard in URL to access website *Dev Tips*
             </p>
-            {(localError || error) && (
-              <div className="bg-red-100 text-red-600 border border-red-500 p-3 rounded">
-                {localError || error}
-              </div>
-            )}
+            <ErrorMessage message={localError || error} />
 
-            <div className="space-y-8">
-              <input
-                id="email"
-                name="email"
-                type="email"
-                value={formData.email}
-                onChange={handleChange}
-                placeholder="Email or Phone Number"
-                required
-                className="bg-granite-softWhite block w-full border-b border-granite-medium focus:outline-none focus:border-granite-dark focus:ring-0"
-              />
-              <input
-                id="password"
-                name="password"
-                type="password"
-                value={formData.password}
-                onChange={handleChange}
-                placeholder="Password"
-                required
-                className="bg-granite-softWhite block w-full border-b border-granite-medium focus:outline-none focus:border-granite-dark focus:ring-0"
-              />
-            </div>
+            <InputField
+              id="email"
+              name="email"
+              type="email"
+              value={formData.email}
+              onChange={handleChange}
+              placeholder="Email or Phone Number"
+              error={validationErrors.email}
+            />
+
+            <InputField
+              id="password"
+              name="password"
+              type="password"
+              value={formData.password}
+              onChange={handleChange}
+              placeholder="Password"
+              error={validationErrors.password}
+            />
 
             <button
               type="submit"
