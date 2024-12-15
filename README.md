@@ -17,7 +17,7 @@
 - **Search**:
   - Search for movies and view detailed information.
 - **Interactive Rating System**:
-  - Rate movies using a 5-star.
+  - Rate movies using a 5-star system.
 - **Dark Mode**:
   - Switch between light and dark themes for an enhanced viewing experience.
 
