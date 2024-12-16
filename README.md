@@ -86,7 +86,7 @@
 4. **Start the Backend Server**:
    In the `backend` directory:
    ```bash
-   npm run dev
+   node index
    ```
 
 5. **Start the Frontend**:
