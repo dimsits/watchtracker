@@ -1,3 +1,5 @@
+# ALERT: PLACE THIS IN YOUR .ENV FOR THE OMDB API TO WORK: OMDB_API_KEY=745b9e95
+
 # WatchTracker
 
 **WatchTracker** is a modern web application that helps users organize and track their movie-watching journey. With features like adding movies to a watchlist, marking them as watched, and providing ratings or reviews, WatchTracker ensures a seamless and enjoyable experience for movie enthusiasts.
