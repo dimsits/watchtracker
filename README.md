@@ -1,4 +1,7 @@
-# ALERT: PLACE THIS IN YOUR .ENV FOR THE OMDB API TO WORK: OMDB_API_KEY=745b9e95
+# ALERT: PLACE THIS IN YOUR .ENV FOR THE API TO WORK:
+##### DATABASE_URL="mysql://root:@localhost:3306/watchtracker"
+##### OMDB_API_KEY=745b9e95
+##### JWT_SECRET=mysecret
 
 # WatchTracker
 
