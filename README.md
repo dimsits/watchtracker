@@ -216,6 +216,6 @@ For questions or support:
 - **GitHub**: [dimsits](https://github.com/dimsits)
 
 - **Name**: Ryan Krisztonn Yana
-- **Email**: 
-- **GitHub**: [username](https://github.com/username)
+- **Email**: krisztonn@gmail.com
+- **GitHub**: [Bokks](https://github.com/Bokkss)
 ```
