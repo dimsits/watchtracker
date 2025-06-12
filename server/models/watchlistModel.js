@@ -138,6 +138,58 @@ async function getUserWatchlist(user_id) {
   return formattedWatchlist;
 }
 
+// Like a movie
+async function likeMovie(user_id, movie_id) {
+  // Check if the movie exists
+  const movie = await prisma.movies.findUnique({ where: { movie_id } });
+  if (!movie) {
+    throw new Error('Movie not found');
+  }
+
+  // Check if the like entry already exists
+  const existingLike = await prisma.like.findUnique({
+    where: {
+      user_id_movie_id: { user_id, movie_id },
+    },
+  });
+
+  if (existingLike) {
+    throw new Error('Movie already liked');
+  }
+
+  // Create like
+  const like = await prisma.like.create({
+    data: {
+      user_id,
+      movie_id,
+    },
+  });
+
+  return like;
+}
+
+// Unlike a movie
+async function unlikeMovie(user_id, movie_id) {
+  // Check if the like exists
+  const existingLike = await prisma.like.findUnique({
+    where: {
+      user_id_movie_id: { user_id, movie_id },
+    },
+  });
+
+  if (!existingLike) {
+    throw new Error('Like not found');
+  }
+
+  await prisma.like.delete({
+    where: {
+      user_id_movie_id: { user_id, movie_id },
+    },
+  });
+
+  return { message: 'Movie unliked' };
+}
+
 // Delete a movie from the user's watchlist
 async function deleteFromWatchlist(user_id, movie_id) {
   // Check if the watchlist entry exists
@@ -165,5 +217,7 @@ module.exports = {
   addToWatchlist,
   markAsWatched,
   getUserWatchlist,
+  likeMovie,
+  unlikeMovie,
   deleteFromWatchlist,
 };
